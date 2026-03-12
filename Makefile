@@ -16,19 +16,19 @@ SD_OUT := atmosphere/contents/$(PROGRAM_ID)/exefs
 
 
 # Set load kind specific variables.
-ifeq ($(LOAD_KIND), Module)
-    LOAD_KIND_ENUM := 2
-    BINARY_NAME := subsdk9 # TODO: support subsdkX?
-    SPECS_NAME := module.specs
-    MK_NAME := module.mk
-else ifeq ($(LOAD_KIND), AsRtld)
-    LOAD_KIND_ENUM := 1
-    BINARY_NAME := rtld
-    SPECS_NAME := as_rtld.specs
-    MK_NAME := as_rtld.mk
-else
-    $(error LOAD_KIND is invalid, please check config.mk)
-endif
+# ifeq ($(LOAD_KIND), Module)
+LOAD_KIND_ENUM := 2
+BINARY_NAME := subsdk9 # TODO: support subsdkX?
+SPECS_NAME := module.specs
+MK_NAME := module.mk
+# else ifeq ($(LOAD_KIND), AsRtld)
+#     LOAD_KIND_ENUM := 1
+#     BINARY_NAME := rtld
+#     SPECS_NAME := as_rtld.specs
+#     MK_NAME := as_rtld.mk
+# else
+#     $(error LOAD_KIND is invalid, please check config.mk)
+# endif
 
 .PHONY: clean all
 

@@ -1,39 +1,39 @@
-#include "lib.hpp"
+#include "main.h"
+#include "patches.hpp"
+#include <string>
+#include <sstream>
+#include <cmath>
+#include <numbers>
+#include <iomanip>
 
-/* Define hook StubCopyright. Trampoline indicates the original function should be kept. */
-/* HOOK_DEFINE_REPLACE can be used if the original function does not need to be kept. */
-HOOK_DEFINE_TRAMPOLINE(StubCopyright) {
+// example of using it
+// int* rupeeCountPtr = getPointer(g_inventory, 0x80);
+// *rupeeCountPtr += 1;
+int* getPointer(uintptr_t addr, uintptr_t offset) {
+    return reinterpret_cast<int*>(addr + offset);
+}
 
-    /* Define the callback for when the function is called. Don't forget to make it static and name it Callback. */
-    static void Callback(bool enabled) {
+HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
+    static int Callback(double arg1, float x, float y) {
+        float angle_rad = std::atan2f(y, x);
+        int angle_deg = (int)std::floor(angle_rad * 180.0 / std::numbers::pi);
 
-        /* Call the original function, with the argument always being false. */
-        Orig(false);
+        angle_deg += 90;
+        if (angle_deg > 360) {
+            angle_deg -= 360;
+        }
+
+        return angle_deg * (0xffffffff / 360);
     }
-
-};
-
-
-/* Declare function to dynamic link with. */
-namespace nn::oe {
-    void SetCopyrightVisibility(bool);
 };
 
 extern "C" void exl_main(void* x0, void* x1) {
     /* Setup hooking environment. */
     exl::hook::Initialize();
 
-    /* Install the hook at the provided function pointer. Function type is checked against the callback function. */
-    StubCopyright::InstallAtFuncPtr(nn::oe::SetCopyrightVisibility);
+    // runCodePatches();
 
-    /* Alternative install funcs: */
-    /* InstallAtPtr takes an absolute address as a uintptr_t. */
-    /* InstallAtOffset takes an offset into the main module. */
-
-    /*
-    For sysmodules/applets, you have to call the entrypoint when ready
-    exl::hook::CallTargetEntrypoint(x0, x1);
-    */
+    PlayerLink__SnapDirection::InstallAtOffset(0xded9f0);
 }
 
 extern "C" NORETURN void exl_exception_entry() {
