@@ -133,6 +133,15 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__HasItemID) {
 };
 
 namespace Inventory {
+    void GiveDebugItems() {
+        for (int i = 0; i < 58; i++) {
+            if (i == 41 || i == 46) {
+                continue;
+            }
+            Inventory__AddItemID::Callback(i, 1, -1);
+        }
+    }
+
     void AddItemID(int ID, int count, int index) {
         Inventory__AddItemID::Callback(ID, count, index);
     }

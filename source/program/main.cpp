@@ -1,9 +1,13 @@
 #include "lib.hpp"
+#include "debug.hpp"
 #include "patches.hpp"
+#include "Hooks/Common/input.hpp"
 #include "Hooks/Common/inventory.hpp"
 #include "Hooks/Common/eventflags.hpp"
 #include "Hooks/Mods/controls.hpp"
 #include "Hooks/Mods/itembehavior.hpp"
+#include "Pointers/flags.hpp"
+#include <string>
 
 // Get rid of play reports
 HOOK_DEFINE_REPLACE(PlayReport__Add) {
@@ -22,10 +26,10 @@ HOOK_DEFINE_REPLACE(PlayReport__Save) {
 HOOK_DEFINE_TRAMPOLINE(PlayerLink__Init) {
     static void Callback(long arg1, long arg2) {
         Orig(arg1, arg2);
-        Inventory::AddItemID(8, 1, -1);
-        Inventory::AddItemID(6, 1, -1);
+        DebugMode::Toggle(InputSystem::IsDebugComboHeld());
     }
 };
+
 
 extern "C" void exl_main(void* x0, void* x1) {
     /* Setup hooking environment. */
@@ -34,6 +38,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     runCodePatches();
 
     // install common hooks
+    InputSystem::InstallHooks();
     EventFlags::InstallHooks();
     Inventory::InstallHooks();
 
@@ -41,8 +46,11 @@ extern "C" void exl_main(void* x0, void* x1) {
     Controls::InstallHooks();
     ItemBehavior::InstallHooks();
 
-    // install effects on player actor init
+    // Get rid of play report logging
+    PlayReport__Add::InstallAtOffset(0x1432450);
     PlayReport__Save::InstallAtOffset(0x1432460);
+
+    // install effects on player actor init
     PlayerLink__Init::InstallAtOffset(0xd2bc50);
 }
 
