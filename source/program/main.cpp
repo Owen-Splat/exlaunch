@@ -4,6 +4,7 @@
 #include "Hooks/Common/input.hpp"
 #include "Hooks/Common/inventory.hpp"
 #include "Hooks/Common/eventflags.hpp"
+#include "Hooks/Common/audio.hpp"
 #include "Hooks/Mods/controls.hpp"
 #include "Hooks/Mods/itembehavior.hpp"
 #include "Pointers/flags.hpp"
@@ -41,6 +42,7 @@ extern "C" void exl_main(void* x0, void* x1) {
     InputSystem::InstallHooks();
     EventFlags::InstallHooks();
     Inventory::InstallHooks();
+    AudioSystem::InstallHooks();
 
     // install mod hooks
     Controls::InstallHooks();

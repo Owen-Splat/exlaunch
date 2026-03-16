@@ -3,31 +3,34 @@
 #include "Hooks/Common/input.hpp"
 
 // Store the current NpadButtonSet. This is called once every frame
-nn::hid::NpadButtonSet g_Buttons;
+nn::hid::NpadButtonSet prevButtons;
+nn::hid::NpadButtonSet newButtons;
 HOOK_DEFINE_TRAMPOLINE(GetNpadState__FullKeyState) {
     static void Callback(nn::hid::NpadFullKeyState* arg1, uint port) {
         Orig(arg1, port);
         if (arg1 != nullptr) {
-            g_Buttons = (*arg1).mButtons;
+            prevButtons = newButtons;
+            newButtons = (*arg1).mButtons;
         }
     }
 };
 
 namespace InputSystem {
-    bool IsRightStickPressed() {
-        return g_Buttons.Test((int)nn::hid::NpadButton::StickR);
+    bool IsButtonPressed(NpadButton button) {
+        return newButtons.Test((int)button);
+    }
+    bool IsButtonJustPressed(NpadButton button) {
+        return prevButtons.Test((int)button) == false && newButtons.Test((int)button) == true;
+    }
+    bool IsButtonJustReleased(NpadButton button) {
+        return prevButtons.Test((int)button) == true && newButtons.Test((int)button) == false;
     }
 
     bool IsDebugComboHeld() {
-        bool upHeld = g_Buttons.Test((int)nn::hid::NpadButton::Up);
-        bool bHeld = g_Buttons.Test((int)nn::hid::NpadButton::B);
-        bool xHeld = g_Buttons.Test((int)nn::hid::NpadButton::X);
-        if (upHeld && bHeld && xHeld) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        bool upHeld = IsButtonPressed(NpadButton::Up);
+        bool bHeld = IsButtonPressed(NpadButton::B);
+        bool xHeld = IsButtonPressed(NpadButton::X);
+        return upHeld && bHeld && xHeld;
     }
 
     void InstallHooks() {

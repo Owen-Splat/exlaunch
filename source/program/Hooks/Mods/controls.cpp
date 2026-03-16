@@ -16,7 +16,7 @@ HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
             angleDeg -= 360;
         }
 
-        if (InputSystem::IsRightStickPressed()) {
+        if (InputSystem::IsButtonJustPressed(InputSystem::NpadButton::StickR)) {
             if (inputBuffer == 0) {
                 snap = !snap;
             }

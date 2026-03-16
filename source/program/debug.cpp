@@ -1,5 +1,6 @@
 #include "lib.hpp"
 #include "Hooks/Common/inventory.hpp"
+#include "Hooks/Common/audio.hpp"
 
 namespace DebugMode {
     bool enabled = false;
@@ -15,6 +16,7 @@ namespace DebugMode {
         }
         if (on) {
             Inventory::GiveDebugItems();
+            AudioSystem::PlaySoundEffect("SE_MAP_CUCCO_ANGRY_VOICE");
         }
         enabled = on;
     }
