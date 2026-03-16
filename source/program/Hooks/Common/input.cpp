@@ -91,12 +91,6 @@ namespace InputSystem {
                     break;
             }
         }
-
-        // if (controlMode == DPad) {
-        //     nn::hid::AnalogStickState modStick = mapDpadToSTick();
-        //     pad.mAnalogStickL.mX = modStick.mX;
-        //     pad.mAnalogStickL.mY = modStick.mY;
-        // }
     }
 
     void InstallHooks() {
