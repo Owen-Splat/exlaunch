@@ -41,9 +41,18 @@ namespace InputSystem {
         DownC = 34,          // [12.0.0+] (Down C button in N64 controller)
     };
 
+    enum ControlMode {
+        Standard,
+        Extra,
+        DPad
+    };
+
+    extern ControlMode controlMode;
+
     bool IsButtonPressed(NpadButton button);
     bool IsButtonJustPressed(NpadButton button);
     bool IsButtonJustReleased(NpadButton button);
     bool IsDebugComboHeld();
+    void MainLoop(nn::hid::NpadFullKeyState pad);
     void InstallHooks();
 }
