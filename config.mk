@@ -38,4 +38,4 @@ FTP_USERNAME := anonymous
 FTP_PASSWORD :=
 
 # Settings for deploying to Ryu. Used by the deploy-ryu.sh script.
-RYU_PATH := /mnt/c/Users/Owen/AppData/Roaming/Ryujinx
+RYU_PATH := C:\Users\Owen\AppData\Roaming\Ryujinx
