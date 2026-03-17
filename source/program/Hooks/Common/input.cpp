@@ -13,8 +13,6 @@ nn::hid::AnalogStickState mapDpadToSTick() {
     bool down = newButtons.Test((int)InputSystem::NpadButton::Down);
     bool left = newButtons.Test((int)InputSystem::NpadButton::Left);
 
-    Logging.Log(std::to_string(up));
-
     nn::hid::AnalogStickState modStick{};
 
     if (up) modStick.mY = 0x7FFFFFFF;
