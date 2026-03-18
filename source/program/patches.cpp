@@ -51,7 +51,12 @@ void randoOptional() {
     p.WriteInst(inst::CmpImmediate(reg::X19, 0x10));
 }
 
-void randoFixes() {}
+void randoFixes() {
+    // remove checking ShieldGet flag so that the user can immediately pause
+    // this is important since Tarin uses the ShieldGet flag as well but we may want custom spawn locations
+    patch::CodePatcher p(0xeacf2c);
+    p.WriteInst(inst::Movz(reg::W0, 1));
+}
 
 void testPatches() {
     patch::CodePatcher p(0xdcdea0);
