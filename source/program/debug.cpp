@@ -15,7 +15,6 @@ namespace DebugMode {
             }
         }
         if (on) {
-            Inventory::GiveDebugItems();
             AudioSystem::PlaySoundEffect("SE_MAP_CUCCO_ANGRY_VOICE");
         }
         enabled = on;

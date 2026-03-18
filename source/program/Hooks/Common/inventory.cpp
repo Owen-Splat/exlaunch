@@ -1,5 +1,5 @@
 #include "../lib.hpp"
-#include "Pointers/inventory.hpp"
+#include "debug.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -96,12 +96,14 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
     static void Callback(int ID, int count, uint index) {
         bool added = true;
 
-        std::string itemName = itemsDict.at(ID);
-        std::string indexStr = "";
-        if (ID == 22 || ID == 23 || ID == 58 || ID == 59 || ID == 114 || ID == 115 || ID == 116) {
-            indexStr = "[" + std::to_string(index) + "]";
+        if (DebugMode::enabled) {
+            std::string itemName = itemsDict.at(ID);
+            std::string indexStr = "";
+            if (ID == 22 || ID == 23 || ID == 58 || ID == 59 || ID == 114 || ID == 115 || ID == 116) {
+                indexStr = "[" + std::to_string(index) + "]";
+            }
+            Logging.Log("Player has obtained '" + itemName + indexStr + "'");
         }
-        Logging.Log("Player has obtained '" + itemName + indexStr + "'");
 
         switch (ID) {
             default:
@@ -133,15 +135,6 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__HasItemID) {
 };
 
 namespace Inventory {
-    void GiveDebugItems() {
-        for (int i = 0; i < 58; i++) {
-            if (i == 41 || i == 46) {
-                continue;
-            }
-            Inventory__AddItemID::Callback(i, 1, -1);
-        }
-    }
-
     void AddItemID(int ID, int count, int index) {
         Inventory__AddItemID::Callback(ID, count, index);
     }

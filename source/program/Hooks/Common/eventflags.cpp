@@ -1,4 +1,5 @@
 #include "../lib.hpp"
+#include "debug.hpp"
 #include "Pointers/flags.hpp"
 #include <string>
 
@@ -13,9 +14,11 @@ HOOK_DEFINE_TRAMPOLINE(EventFlags__SetFlag) {
         bool flagState = !!arg3;
         if (EventFlags__CheckFlag::Callback(arg1, strAddr) != flagState) {
             Orig(arg1, strAddr, arg3);
-            std::string* strPtr = reinterpret_cast<std::string*>(strAddr);
-            std::string stateStr = flagState ? "true" : "false";
-            Logging.Log("Set flag '" + *strPtr + "' to " + stateStr);
+            if (DebugMode::enabled) {
+                std::string* strPtr = reinterpret_cast<std::string*>(strAddr);
+                std::string stateStr = flagState ? "true" : "false";
+                Logging.Log("Set flag '" + *strPtr + "' to " + stateStr);
+            }
         }
     }
 };
