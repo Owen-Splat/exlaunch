@@ -1,6 +1,8 @@
 #include "lib.hpp"
 #include "nn/hid.h"
+#include "debug.hpp"
 #include "Hooks/Common/input.hpp"
+#include "Pointers/inventorypointers.hpp"
 #include <string>
 
 // Store previous and current buttons to be able to tell when a button was just pressed rather than held

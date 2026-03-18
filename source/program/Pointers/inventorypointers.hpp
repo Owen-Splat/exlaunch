@@ -90,6 +90,7 @@ namespace InventorySystem {
     };
 
     extern InventoryItems* Items;
+    extern uint8_t* Level;
 
     void SetBaseItem(BaseItemBits item, bool set);
 }
