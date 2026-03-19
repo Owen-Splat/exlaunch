@@ -1,5 +1,6 @@
 #include "../lib.hpp"
 #include "debug.hpp"
+#include "Hooks/Common/eventflags.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -89,34 +90,6 @@ const std::unordered_map<int, std::string> itemsDict = {
     {126,   "BottleFairy"}
 };
 
-// The purpose of this is to have our own code run for specific items
-// One example would be that getting SurfHarp needs to set 4 flags to disable the ghost
-// Other items will just use the original code
-HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
-    static void Callback(int ID, int count, uint index) {
-        bool added = true;
-
-        if (DebugMode::enabled) {
-            std::string itemName = itemsDict.at(ID);
-            std::string indexStr = "";
-            if (ID == 22 || ID == 23 || ID == 58 || ID == 59 || ID == 114 || ID == 115 || ID == 116) {
-                indexStr = "[" + std::to_string(index) + "]";
-            }
-            Logging.Log("Player has obtained '" + itemName + indexStr + "'");
-        }
-
-        switch (ID) {
-            default:
-                added = false;
-                break;
-        }
-
-        if (!added) {
-            Orig(ID, count, index);
-        }
-    }
-};
-
 // Normally, the game uses a signed 8 bit int for the ID arg
 // This is an issue if we want to add custom items because we cannot surpass 127 total items
 // For the standalone randomizer, there are enough unused IDs to add whatever is needed
@@ -130,6 +103,74 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__HasItemID) {
         switch (ID) {
             default:
                 return false;
+        }
+    }
+};
+
+// The purpose of this is to have our own code run for specific items
+// One example would be that getting SurfHarp needs to set 4 flags to disable the ghost
+// Other items will just use the original code
+HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
+    static void Callback(int ID, int count, uint index) {
+        if (DebugMode::enabled) {
+            std::string itemName = itemsDict.at(ID);
+            std::string indexStr = "";
+            if (ID == 22 || ID == 23 || ID == 58 || ID == 59 || ID == 114 || ID == 115 || ID == 116) {
+                indexStr = "[" + std::to_string(index) + "]";
+            }
+            Logging.Log("Player has obtained '" + itemName + indexStr + "'");
+        }
+
+        // Orig(ID, count, index); // non-rando mod makers should uncomment this and remove the rest of the function
+
+        // Automatically set item GettingFlags so that we dont need as many cases
+        if (!EventFlags::CheckGettingFlag(ID)) {
+            EventFlags::SetGettingFlag(ID);
+        }
+
+        // Add the item as normal if it is within the vanilla range
+        if (ID < 127) {
+            // We also need to prevent trade items from actually getting added (29-42 because lens does get added)
+            if (ID < 29 || ID > 42) {
+                Orig(ID, count, index);
+            }
+        }
+
+        // Some items need more than one flag set when obtained
+        // We also want to give max powder/bombs/arrows when getting bow or upgrades
+        switch (ID) {
+            case 5: // Bow
+            case 125: // Arrow_MaxUp
+                Orig(60, 60, -1);
+                break;
+            case 50: // FullMoonCello
+                EventFlags::SetFlag("BowWowEvent", true);
+                EventFlags::SetFlag("DoorOpen_Btl_MoriblinCave_2A", false);
+                EventFlags::SetFlag("DoorOpen_Btl_MoriblinCave_1A", false);
+                break;
+            case 53: // SurfHarp
+                EventFlags::SetFlag("GhostClear1", true);
+                EventFlags::SetFlag("Ghost2_Clear", true);
+                EventFlags::SetFlag("Ghost3_Clear", true);
+                EventFlags::SetFlag("Ghost4_Clear", true);
+                break;
+            case 113: // Bottle - TRY TO ACTUALLY FIX FISHING SO WE CAN GET RID OF THIS JANK WORKAROUND
+                if (index == 1) {
+                    EventFlags::SetFlag("Bottle1Get", true);
+                }
+                break;
+            case 123: // MagicPowder_MaxUp
+                if (EventFlags::CheckFlag("GetMagicPowder")) {
+                    Orig(11, 40, -1);
+                }
+                break;
+            case 124: // Bomb_MaxUp
+                if (EventFlags::CheckFlag("unused0424")) {
+                    Orig(4, 60, -1);
+                }
+                break;
+            default:
+                break;
         }
     }
 };
