@@ -3,6 +3,18 @@
 #include "Pointers/flags.hpp"
 #include <string>
 
+HOOK_DEFINE_TRAMPOLINE(EventFlags__CheckGettingFlag) {
+    static int Callback(int itemID) {
+        return Orig(itemID);
+    }
+};
+
+HOOK_DEFINE_TRAMPOLINE(EventFlags__SetGettingFlag) {
+    static void Callback(int itemID) {
+        Orig(itemID);
+    }
+};
+
 HOOK_DEFINE_TRAMPOLINE(EventFlags__CheckFlag) {
     static bool Callback(long arg1, long strAddr) {
         return Orig(arg1, strAddr);
@@ -24,6 +36,14 @@ HOOK_DEFINE_TRAMPOLINE(EventFlags__SetFlag) {
 };
 
 namespace EventFlags {
+    bool CheckGettingFlag(int itemID) {
+        return !!EventFlags__CheckGettingFlag::Callback(itemID);
+    }
+
+    void SetGettingFlag(int itemID) {
+        EventFlags__SetGettingFlag::Callback(itemID);
+    }
+
     bool CheckFlag(std::string flagName) {
         return EventFlags__CheckFlag::Callback((long)g_EventFlags, (long)&flagName);
     }
@@ -33,6 +53,8 @@ namespace EventFlags {
     }
 
     void InstallHooks() {
+        EventFlags__CheckGettingFlag::InstallAtOffset(0x8d2940);
+        EventFlags__SetGettingFlag::InstallAtOffset(0x8d2a70);
         EventFlags__CheckFlag::InstallAtOffset(0xdfa920);
         EventFlags__SetFlag::InstallAtOffset(0xdfa7b0);
     }
