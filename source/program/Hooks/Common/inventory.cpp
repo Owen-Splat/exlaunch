@@ -1,6 +1,7 @@
 #include "../lib.hpp"
 #include "debug.hpp"
 #include "Hooks/Common/eventflags.hpp"
+#include "Pointers/inventorypointers.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -111,7 +112,7 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__HasItemID) {
 // One example would be that getting SurfHarp needs to set 4 flags to disable the ghost
 // Other items will just use the original code
 HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
-    static void Callback(int ID, int count, uint index) {
+    static void Callback(int ID, int count, int index) {
         if (DebugMode::enabled) {
             std::string itemName = itemsDict.at(ID);
             std::string indexStr = "";
@@ -123,18 +124,20 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
 
         // Orig(ID, count, index); // non-rando mod makers should uncomment this and remove the rest of the function
 
+        // Add the item as normal if it is within the vanilla range
+        if (ID < 127) {
+            // Trade items will just use the GettingFlag, and we reimplement how dungeon items get added
+            if (ID < 29 || ID > 49) {
+                Orig(ID, count, index);
+            }
+        }
+
         // Automatically set item GettingFlags so that we dont need as many cases
         if (!EventFlags::CheckGettingFlag(ID)) {
             EventFlags::SetGettingFlag(ID);
         }
 
-        // Add the item as normal if it is within the vanilla range
-        if (ID < 127) {
-            // We also need to prevent trade items from actually getting added (29-42 because lens does get added)
-            if (ID < 29 || ID > 42) {
-                Orig(ID, count, index);
-            }
-        }
+        uint8_t actualLevel = *InventorySystem::Level; // for dungeon items
 
         // Some items need more than one flag set when obtained
         // We also want to give max powder/bombs/arrows when getting bow or upgrades
@@ -142,6 +145,25 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
             case 5: // Bow
             case 125: // Arrow_MaxUp
                 Orig(60, 60, -1);
+                break;
+            case 43: // MagifyingLens - lens is the only trade item we want actually added
+                Orig(ID, count, index);
+                break;
+            case 44: // Compass
+            case 45: // DungeonMap
+            case 47: // StoneBeak
+            case 48: // SmallKey
+            case 49: // NightmareKey
+                if (index == -1) { // index -1 will only be used by Chamber Dungeons in which case we want to keep orig func
+                    Orig(ID, count, index);
+                }
+                else {
+                    // index is ignored for dungeon items, game uses a level byte to determine where to add the items in memory
+                    // so we'll assign ids to what the level byte would need to be, and edit the byte before and after orig code
+                    *InventorySystem::Level = index;
+                    Orig(ID, count, index);
+                    *InventorySystem::Level = actualLevel;
+                }
                 break;
             case 50: // FullMoonCello
                 EventFlags::SetFlag("BowWowEvent", true);
@@ -166,6 +188,7 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
                 break;
             case 124: // Bomb_MaxUp
                 if (EventFlags::CheckFlag("unused0424")) {
+                    Orig(ID, count, index);
                     Orig(4, 60, -1);
                 }
                 break;
