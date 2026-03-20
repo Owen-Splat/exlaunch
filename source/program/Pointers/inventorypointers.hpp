@@ -1,5 +1,8 @@
 #pragma once
+#include <bitset>
 #include <cstdint>
+
+typedef bool Field;
 
 namespace InventorySystem {
     enum class Companion : uint8_t {
@@ -10,51 +13,54 @@ namespace InventorySystem {
         Rooster
     };
 
-    enum class BaseItemBits {
-        SwordLv1,
-        Shield,
-        Bomb,
-        Bow,
-        Hookshot,
-        Boomerang,
-        MagicRod,
-        Shovel,
-        MagicPowder,
-        RocsFeather,
-        PowerBraceletLv1,
-        PegasusBoots,
-        Ocarina
+    struct MainItemBits {
+        Field SwordLv1 : 1;
+        Field Shield : 1;
+        Field Bomb : 1;
+        Field Bow : 1;
+        Field Hookshot : 1;
+        Field Boomerang : 1;
+        Field MagicRod : 1;
+        Field Shovel : 1;
+        Field MagicPowder : 1;
+        Field RocsFeather : 1;
+        Field PowerBraceletLv1 : 1;
+        Field PegasusBoots : 1;
+        Field Ocarina : 1;
+        Field Bottle0 : 1;
+        Field Bottle1 : 1;
+        Field Bottle2 : 1;
     };
 
-    enum class ExtraItemBits {
-        Flippers,
-        Medicine,
-        TailKey,
-        SlimeKey,
-        AnglerKey,
-        FaceKey,
-        BirdKey,
-        FullMoonCello,
-        ConchHorn,
-        SeaLilysBell,
-        SurfHarp,
-        WindMarimba,
-        CoralTriangle,
-        EveningCalmOrgan,
-        ThunderDrum,
-        SleepyMushroom,
-        ShellRader
+    struct ExtraItemBits {
+        Field Flippers : 1;
+        Field Medicine : 1;
+        Field TailKey : 1;
+        Field SlimeKey : 1;
+        Field AnglerKey : 1;
+        Field FaceKey : 1;
+        Field BirdKey : 1;
+        Field FullMoonCello : 1;
+        Field ConchHorn : 1;
+        Field SeaLilysBell : 1;
+        Field SurfHarp : 1;
+        Field WindMarimba : 1;
+        Field CoralTriangle : 1;
+        Field EveningCalmOrgan : 1;
+        Field ThunderDrum : 1;
+        Field SleepyMushroom : 1;
+        Field ShellRader : 1;
     };
 
-    enum class UpgradedItemBits {
-        SwordLv2,
-        MirrorShield,
-        PowerBraceletLv2,
-        MagicPowder_MaxUp,
-        Bomb_MaxUp,
-        Arrow_MaxUp,
-        ClothesRed,
-        ClothesBlue
+    struct UpgradeItemBits {
+        Field SwordLv2 : 1;
+        Field MirrorShield : 1;
+        Field PowerBraceletLv2 : 1;
+        Field MagicPowder_MaxUp : 1;
+        Field Bomb_MaxUp : 1;
+        Field Arrow_MaxUp : 1;
+        Field ClothesRed : 1;
+        Field ClothesBlue : 1;
     };
 
     struct InventoryItems {
@@ -67,7 +73,7 @@ namespace InventorySystem {
         uint16_t HeartContainers; // 0x98
         uint8_t TradeItem; // 0x9a
         uint8_t Songs; // 0x9b
-        uint8_t UpgradeItems; // 0x9c
+        UpgradeItemBits UpgradeItems; // 0x9c
         Companion Follower; // 0x9d
         uint8_t BombCount; // 0x9e
         uint8_t ArrowCount; // 0x9f
@@ -75,22 +81,24 @@ namespace InventorySystem {
         uint8_t EquippedSong; // 0xa1
         uint8_t EquipY; // 0xa2
         uint8_t EquipX; // 0xa3
-        char unk3[0x4];
-        uint32_t BaseItems; // 0xa8
-        uint32_t ExtraItems; // 0xac
-        uint64_t unk4; // 0xb0
-        char unk5[0xa];
+        uint8_t KillCount; // 0xa4
+        uint8_t KillCountNoDamage; // 0xa5
+        uint16_t unk3;
+        MainItemBits MainItems; // 0xa8
+        uint16_t unk4;
+        ExtraItemBits ExtraItems; // 0xac
+        char unk6;
+        uint64_t unk5; // 0xb0
+        char unk7[0xa];
         uint8_t GoldenLeaves; // 0xc2
-        char unk6[0x25];
+        char unk8[0x25];
         uint32_t Figurines; // 0xe8
-        char unk7[0x34];
+        char unk9[0x34];
         bool HeroMode; // 0x120
-        char unk8;
+        char unk10;
         uint8_t RareFishSign; // 0x122
     };
 
     extern InventoryItems* Items;
     extern uint8_t* Level;
-
-    void SetBaseItem(BaseItemBits item, bool set);
 }
