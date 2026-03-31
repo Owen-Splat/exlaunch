@@ -1,11 +1,14 @@
 #include "../lib.hpp"
 #include <cmath>
 #include <numbers>
+#include <Config/config.hpp>
 #include "Hooks/Common/input.hpp"
 
 // We replace the function for mapping 8 directions with our own code that maps to 360 degrees of movement
 HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
     static int Callback(double arg1, float x, float y) {
+        EXL_ASSERT(global_config.initialized);
+
         float angleRad = std::atan2f(y, x);
         int angleDeg = (int)std::floor(angleRad * 180.0 / std::numbers::pi);
 
@@ -14,7 +17,7 @@ HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
             angleDeg -= 360;
         }
 
-        if (InputSystem::controlMode != InputSystem::ControlMode::Extra) {
+        if (global_config.control_scheme.movement == MovementMode::Standard) {
             angleDeg = (int)std::round(angleDeg / 45.0f) * 45;
         }
 

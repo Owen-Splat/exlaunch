@@ -12,6 +12,7 @@ include $(PWD)/config.mk
 # Define common variables.
 NAME := $(shell basename $(PWD))
 OUT := $(PWD)/deploy
+CONFIG_OUT := $(PWD)/config.ini
 SD_OUT := atmosphere/contents/$(PROGRAM_ID)/exefs
 
 
