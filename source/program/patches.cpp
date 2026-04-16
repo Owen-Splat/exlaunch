@@ -31,25 +31,25 @@ void randoCosmeticPatches() {
     p.WriteInst(inst::Branch(0xd799f8 - 0xd79804));
 }
 
-void randoOptional() {
-    patch::CodePatcher p(0);
+// void randoOptional() {
+//     patch::CodePatcher p(0);
 
-    // free book - read the book of secrets without the magnifying lens
-    p.Seek(0x7e3004);
-    p.WriteInst(inst::Movz(reg::W0, 1));
+//     // free book - read the book of secrets without the magnifying lens
+//     p.Seek(0x7e3004);
+//     p.WriteInst(inst::Movz(reg::W0, 1));
 
-    // Nice Bombs - no limit to how many can be placed at once
-    p.Seek(0xd52958);
-    p.WriteInst(inst::Movz(reg::W8, 1));
+//     // Nice Bombs - no limit to how many can be placed at once
+//     p.Seek(0xd52958);
+//     p.WriteInst(inst::Movz(reg::W8, 1));
 
-    // Nice Hookshot - hookshot any surface
-    p.Seek(0xd7f188);
-    p.WriteInst(inst::Movz(reg::W20, 3));
+//     // Nice Hookshot - hookshot any surface
+//     p.Seek(0xd7f188);
+//     p.WriteInst(inst::Movz(reg::W20, 3));
 
-    // Nice Magic Rod - no projectile count limit
-    p.Seek(0xd51698);
-    p.WriteInst(inst::CmpImmediate(reg::X19, 0x10));
-}
+//     // Nice Magic Rod - no projectile count limit
+//     p.Seek(0xd51698);
+//     p.WriteInst(inst::CmpImmediate(reg::X19, 0x10));
+// }
 
 void randoFixes() {
     // remove checking ShieldGet flag so that the user can immediately pause
@@ -58,16 +58,20 @@ void randoFixes() {
     p.WriteInst(inst::Movz(reg::W0, 1));
 }
 
-void testPatches() {
-    patch::CodePatcher p(0xdcdea0);
-    p.Write((uint32_t)0x1e2e5000); // fmov s0, 1.125 (walk base speed is 12.5% faster than vanilla)
-    p.Seek(0xdcff20);
-    p.Write((uint32_t)0x1e2e9000); // fmov s0, 1.25 (walk powerup speed is 25% faster than vanilla base speed)
-}
+// void testPatches() {
+//     patch::CodePatcher p(0xdcdea0);
+//     p.Write((uint32_t)0x1e2e5000); // fmov s0, 1.125 (walk base speed is 12.5% faster than vanilla)
+//     p.Seek(0xdcff20);
+//     p.Write((uint32_t)0x1e2e9000); // fmov s0, 1.25 (walk powerup speed is 25% faster than vanilla base speed)
+// }
 
 void runCodePatches() {
-    blurRemoval();
-    randoOptional();
+    EXL_ASSERT(global_config.initialized);
+    if (global_config.blur_removal.enabled) {
+        blurRemoval();
+    }
+    randoCosmeticPatches()
     randoFixes();
-    testPatches();
+    // randoOptional();
+    // testPatches();
 }

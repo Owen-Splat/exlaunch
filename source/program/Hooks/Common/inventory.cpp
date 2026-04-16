@@ -1,7 +1,7 @@
 #include "../lib.hpp"
 #include "debug.hpp"
 #include "Hooks/Common/eventflags.hpp"
-#include "Pointers/inventorypointers.hpp"
+#include "Game/Data/inventory.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -137,7 +137,7 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
             EventFlags::SetGettingFlag(ID);
         }
 
-        uint8_t actualLevel = *InventorySystem::Level; // for dungeon items
+        uint8_t actualLevel = *Game::Data::Inventory::Level; // for dungeon items
 
         // Some items need more than one flag set when obtained
         // We also want to give max powder/bombs/arrows when getting bow or upgrades
@@ -160,9 +160,9 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
                 else {
                     // index is ignored for dungeon items, game uses a level byte to determine where to add the items in memory
                     // so we'll assign ids to what the level byte would need to be, and edit the byte before and after orig code
-                    *InventorySystem::Level = index;
+                    *Game::Data::Inventory::Level = index;
                     Orig(ID, count, index);
-                    *InventorySystem::Level = actualLevel;
+                    *Game::Data::Inventory::Level = actualLevel;
                 }
                 break;
             case 50: // FullMoonCello

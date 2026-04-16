@@ -1,6 +1,6 @@
 #include "../lib.hpp"
 #include "debug.hpp"
-#include "Pointers/flags.hpp"
+#include "symbols.hpp"
 #include <string>
 
 HOOK_DEFINE_TRAMPOLINE(EventFlags__CheckGettingFlag) {
@@ -45,11 +45,11 @@ namespace EventFlags {
     }
 
     bool CheckFlag(std::string flagName) {
-        return EventFlags__CheckFlag::Callback((long)g_EventFlags, (long)&flagName);
+        return EventFlags__CheckFlag::Callback(g_symbols["EventFlagsPtr"], (long)&flagName);
     }
 
     void SetFlag(std::string flagName, bool flagState) {
-        EventFlags__SetFlag::Callback((long)g_EventFlags, (long)&flagName, (long)flagState);
+        EventFlags__SetFlag::Callback(g_symbols["EventFlagsPtr"], (long)&flagName, (long)flagState);
     }
 
     void InstallHooks() {

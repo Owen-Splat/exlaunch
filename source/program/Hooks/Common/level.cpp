@@ -1,7 +1,7 @@
 #include "../lib.hpp"
 #include "debug.hpp"
 #include "Hooks/Common/eventflags.hpp"
-#include "Pointers/inventorypointers.hpp"
+#include "Game/Data/inventory.hpp"
 #include <string>
 
 std::string prevLevel = "";
@@ -12,18 +12,18 @@ std::string currentLevel = "";
 void FixFishingBottle() {
     if (currentLevel == "Field") {
         if (EventFlags::CheckFlag("Bottle1Get")) { // flag set when the player obtains bottle index 1
-            InventorySystem::Items->MainItems.Bottle1 = true;
+            Game::Data::Inventory::Items->MainItems.Bottle1 = true;
         }
         else {
-            InventorySystem::Items->MainItems.Bottle1 = false;
+            Game::Data::Inventory::Items->MainItems.Bottle1 = false;
         }
     }
     else if (currentLevel == "FishingPond") {
         if (EventFlags::CheckFlag("FishingBottleGet")) { // flag set when the player gets the item check for fishing bottle
-            InventorySystem::Items->MainItems.Bottle1 = true;
+            Game::Data::Inventory::Items->MainItems.Bottle1 = true;
         }
         else {
-            InventorySystem::Items->MainItems.Bottle1 = true;
+            Game::Data::Inventory::Items->MainItems.Bottle1 = true;
         }
     }
 }

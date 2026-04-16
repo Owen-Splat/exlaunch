@@ -28,6 +28,10 @@ struct PatchConfig {
 
     struct {
         bool enabled;
+    } blur_removal;
+
+    struct {
+        bool enabled;
     } speed_hack;
 
     void parse(std::string config_str) {
@@ -81,6 +85,9 @@ struct PatchConfig {
             else if (current_section == "control_scheme") {
                 parseControlScheme(key, value);
             }
+            else if (current_section == "blur_removal") {
+                parseBlurRemoval(key, value);
+            }
             else if (current_section == "speed_hack") {
                 parseSpeedHack(key, value);
             }
@@ -110,10 +117,15 @@ struct PatchConfig {
         }
     }
 
+    void parseBlurRemoval(std::string key, std::string value) {
+        if (key == "enabled" && value == "true") {
+            blur_removal.enabled = true;
+        }
+    }
+
     void parseSpeedHack(std::string key, std::string value) {
         if (key == "enabled" && value == "true") {
             speed_hack.enabled = true;
-            Logging.Log("SPEED HACK ENABLED");
         }
     }
 };

@@ -44,7 +44,6 @@ namespace InputSystem {
     bool IsButtonPressed(NpadButton button);
     bool IsButtonJustPressed(NpadButton button);
     bool IsButtonJustReleased(NpadButton button);
-    bool IsDebugComboHeld();
     void MainLoop(nn::hid::NpadFullKeyState pad);
     void InstallHooks();
 }

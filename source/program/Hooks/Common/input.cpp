@@ -66,13 +66,6 @@ namespace InputSystem {
         return prevButtons.Test((int)button) == true && newButtons.Test((int)button) == false;
     }
 
-    bool IsDebugComboHeld() {
-        bool upHeld = IsButtonPressed(NpadButton::Up);
-        bool bHeld = IsButtonPressed(NpadButton::B);
-        bool xHeld = IsButtonPressed(NpadButton::X);
-        return upHeld && bHeld && xHeld;
-    }
-
     void MainLoop(nn::hid::NpadFullKeyState pad) {
         prevButtons = newButtons;
         newButtons = pad.mButtons;

@@ -11,30 +11,18 @@
 #include "Hooks/Common/level.hpp"
 #include "Hooks/Mods/controls.hpp"
 #include "Hooks/Mods/itembehavior.hpp"
-// #include "Patches/speed_hack.hpp"
-// #include "Patches/blur_removal.hpp"
 #include <string>
 
 // Get rid of play reports
 HOOK_DEFINE_REPLACE(PlayReport__Add) {
     static void Callback(long arg1, long arg2) {
-
+        
     }
 };
 
 HOOK_DEFINE_REPLACE(PlayReport__Save) {
     static void Callback(long arg1) {
-
-    }
-};
-
-// Do stuff once per file load
-HOOK_DEFINE_TRAMPOLINE(PlayerLink__Init) {
-    static void Callback(long arg1, long arg2) {
-        Orig(arg1, arg2);
-        DebugMode::Toggle(InputSystem::IsDebugComboHeld());
-        InventorySystem::Items->MainItems.Boomerang = true;
-        InventorySystem::Items->MainItems.RocsFeather = true;
+        
     }
 };
 
@@ -54,6 +42,7 @@ HOOK_DEFINE_TRAMPOLINE(nnMain){
             EXL_ABORT("Failed to read config.");
         }
         global_config.parse(config_str);
+        runCodePatches();
         Orig();
     }
 };
@@ -62,8 +51,6 @@ extern "C" void exl_main(void* x0, void* x1) {
     /* Setup hooking environment. */
     exl::hook::Initialize();
     nnMain::InstallAtOffset(0x1bbf0);
-
-    // runCodePatches();
 
     // install common hooks
     AudioSystem::InstallHooks();
@@ -79,12 +66,6 @@ extern "C" void exl_main(void* x0, void* x1) {
     // Get rid of play report logging
     PlayReport__Add::InstallAtOffset(0x1432450);
     PlayReport__Save::InstallAtOffset(0x1432460);
-
-    // install effects on player actor init
-    PlayerLink__Init::InstallAtOffset(0xd2bc50);
-
-    // install_speed_hack();
-    // install_blur_removal();
 }
 
 extern "C" NORETURN void exl_exception_entry() {
