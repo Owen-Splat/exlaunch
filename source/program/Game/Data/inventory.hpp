@@ -1,10 +1,10 @@
 #pragma once
-#include <bitset>
-#include <cstdint>
+#include "lib.hpp"
+#include "symbols.hpp"
 
-typedef bool Field;
+namespace Game::Data::Inventory {
+    typedef bool Field;
 
-namespace InventorySystem {
     enum class Companion : uint8_t {
         Alone,
         BowWow,
@@ -99,6 +99,6 @@ namespace InventorySystem {
         uint8_t RareFishSign; // 0x122
     };
 
-    extern InventoryItems* Items;
-    extern uint8_t* Level;
+    inline InventoryItems* Items = reinterpret_cast<InventoryItems*>(g_symbols["InventoryPtr"]);
+    inline uint8_t* Level = reinterpret_cast<uint8_t*>(g_symbols["LevelIndexPtr"]);
 }

@@ -11,12 +11,9 @@
 #include "Hooks/Common/level.hpp"
 #include "Hooks/Mods/controls.hpp"
 #include "Hooks/Mods/itembehavior.hpp"
-#include "Pointers/flags.hpp"
+// #include "Patches/speed_hack.hpp"
+// #include "Patches/blur_removal.hpp"
 #include <string>
-
-const exl::util::ModuleInfo g_MainInfo = exl::util::GetMainModuleInfo();
-const uintptr_t g_BaseAddress = g_MainInfo.m_Total.m_Start;
-const uintptr_t g_MainEnd = g_BaseAddress + g_MainInfo.m_Total.m_Size;
 
 // Get rid of play reports
 HOOK_DEFINE_REPLACE(PlayReport__Add) {
@@ -34,11 +31,10 @@ HOOK_DEFINE_REPLACE(PlayReport__Save) {
 // Do stuff once per file load
 HOOK_DEFINE_TRAMPOLINE(PlayerLink__Init) {
     static void Callback(long arg1, long arg2) {
-        // Logging.Log(std::to_string((long)g_BaseAddress));
-        // Logging.Log(std::to_string((long)g_MainEnd));
-
         Orig(arg1, arg2);
-        // DebugMode::Toggle(InputSystem::IsDebugComboHeld());
+        DebugMode::Toggle(InputSystem::IsDebugComboHeld());
+        InventorySystem::Items->MainItems.Boomerang = true;
+        InventorySystem::Items->MainItems.RocsFeather = true;
     }
 };
 
@@ -86,6 +82,9 @@ extern "C" void exl_main(void* x0, void* x1) {
 
     // install effects on player actor init
     PlayerLink__Init::InstallAtOffset(0xd2bc50);
+
+    // install_speed_hack();
+    // install_blur_removal();
 }
 
 extern "C" NORETURN void exl_exception_entry() {
