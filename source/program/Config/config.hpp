@@ -22,6 +22,14 @@ struct PatchConfig {
         MovementMode movement;
     } control_scheme;
 
+    struct {
+        bool enabled;
+    } nice_items;
+
+    struct {
+        bool enabled;
+    } speed_hack;
+
     void parse(std::string config_str) {
         std::stringstream ss(config_str);
         std::string line;
@@ -73,17 +81,18 @@ struct PatchConfig {
             else if (current_section == "control_scheme") {
                 parseControlScheme(key, value);
             }
+            else if (current_section == "speed_hack") {
+                parseSpeedHack(key, value);
+            }
         }
 
         initialized = true;
     }
 
     void parseDebugMode(std::string key, std::string value) {
-        bool enabled = false;
-        if (value == "true") {
-            enabled = true;
+        if (key == "enabled" && value == "true") {
+            debug_mode.enabled = true;
         }
-        debug_mode.enabled = enabled;
     }
 
     void parseControlScheme(std::string key, std::string value) {
@@ -98,6 +107,13 @@ struct PatchConfig {
             else {
                 control_scheme.movement = MovementMode::Standard;
             }
+        }
+    }
+
+    void parseSpeedHack(std::string key, std::string value) {
+        if (key == "enabled" && value == "true") {
+            speed_hack.enabled = true;
+            Logging.Log("SPEED HACK ENABLED");
         }
     }
 };
