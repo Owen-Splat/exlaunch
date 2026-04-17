@@ -34,6 +34,10 @@ struct PatchConfig {
         bool enabled;
     } speed_hack;
 
+    struct {
+        bool enabled;
+    } randomizer_compatible;
+
     void parse(std::string config_str) {
         std::stringstream ss(config_str);
         std::string line;
@@ -91,6 +95,9 @@ struct PatchConfig {
             else if (current_section == "speed_hack") {
                 parseSpeedHack(key, value);
             }
+            else if (current_section == "randomizer_compatible") {
+                parseRandomizerCompatible(key, value);
+            }
         }
 
         initialized = true;
@@ -126,6 +133,12 @@ struct PatchConfig {
     void parseSpeedHack(std::string key, std::string value) {
         if (key == "enabled" && value == "true") {
             speed_hack.enabled = true;
+        }
+    }
+
+    void parseRandomizerCompatible(std::string key, std::string value) {
+        if (key == "enabled" && value == "true") {
+            randomizer_compatible.enabled = true;
         }
     }
 };

@@ -31,47 +31,27 @@ void randoCosmeticPatches() {
     p.WriteInst(inst::Branch(0xd799f8 - 0xd79804));
 }
 
-// void randoOptional() {
-//     patch::CodePatcher p(0);
-
-//     // free book - read the book of secrets without the magnifying lens
-//     p.Seek(0x7e3004);
-//     p.WriteInst(inst::Movz(reg::W0, 1));
-
-//     // Nice Bombs - no limit to how many can be placed at once
-//     p.Seek(0xd52958);
-//     p.WriteInst(inst::Movz(reg::W8, 1));
-
-//     // Nice Hookshot - hookshot any surface
-//     p.Seek(0xd7f188);
-//     p.WriteInst(inst::Movz(reg::W20, 3));
-
-//     // Nice Magic Rod - no projectile count limit
-//     p.Seek(0xd51698);
-//     p.WriteInst(inst::CmpImmediate(reg::X19, 0x10));
-// }
-
 void randoFixes() {
     // remove checking ShieldGet flag so that the user can immediately pause
     // this is important since Tarin uses the ShieldGet flag as well but we may want custom spawn locations
     patch::CodePatcher p(0xeacf2c);
     p.WriteInst(inst::Movz(reg::W0, 1));
-}
 
-// void testPatches() {
-//     patch::CodePatcher p(0xdcdea0);
-//     p.Write((uint32_t)0x1e2e5000); // fmov s0, 1.125 (walk base speed is 12.5% faster than vanilla)
-//     p.Seek(0xdcff20);
-//     p.Write((uint32_t)0x1e2e9000); // fmov s0, 1.25 (walk powerup speed is 25% faster than vanilla base speed)
-// }
+    // free book - read the book of secrets without the magnifying lens
+    // not sure if this setting will be kept or baked in as a default feature
+    p.Seek(0x7e3004);
+    p.WriteInst(inst::Movz(reg::W0, 1));
+}
 
 void runCodePatches() {
     EXL_ASSERT(global_config.initialized);
     if (global_config.blur_removal.enabled) {
         blurRemoval();
     }
-    randoCosmeticPatches()
-    randoFixes();
+    if (global_config.randomizer_compatible.enabled) {
+        randoCosmeticPatches()
+        randoFixes();
+    }
     // randoOptional();
     // testPatches();
 }
