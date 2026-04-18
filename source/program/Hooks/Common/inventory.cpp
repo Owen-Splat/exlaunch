@@ -91,23 +91,6 @@ const std::unordered_map<int, std::string> itemsDict = {
     {126,   "BottleFairy"}
 };
 
-// Normally, the game uses a signed 8 bit int for the ID arg
-// This is an issue if we want to add custom items because we cannot surpass 127 total items
-// For the standalone randomizer, there are enough unused IDs to add whatever is needed
-// But for future multiworld support, we will need more
-HOOK_DEFINE_TRAMPOLINE(Inventory__HasItemID) {
-    static bool Callback(int ID, int count, int index) {
-        if (ID <= 127) {
-            return Orig((uint8_t)ID, count, index);
-        }
-
-        switch (ID) {
-            default:
-                return false;
-        }
-    }
-};
-
 // The purpose of this is to have our own code run for specific items
 // One example would be that getting SurfHarp needs to set 4 flags to disable the ghost
 // Other items will just use the original code
@@ -203,12 +186,7 @@ namespace Inventory {
         Inventory__AddItemID::Callback(ID, count, index);
     }
 
-    bool HasItemID(int ID, int count, int index) {
-        return Inventory__HasItemID::Callback(ID, count, index);
-    }
-
     void InstallHooks() {
         Inventory__AddItemID::InstallAtOffset(0x8d08e0);
-        Inventory__HasItemID::InstallAtOffset(0x8d1a30);
     }
 }
