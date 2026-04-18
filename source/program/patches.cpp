@@ -4,10 +4,51 @@ namespace patch = exl::patch;
 namespace inst = exl::armv8::inst;
 namespace reg = exl::armv8::reg;
 
-// Credits to theboy181 for the patch
 void blurRemoval() {
+    // Removes the blur around the edge of the screen
+    // Credits to theboy181 for the patch
     patch::CodePatcher p(0x16cbd73);
     p.Write("NoTiltShift");
+}
+
+void niceItems() {
+    // Nice Bombs - no limit to how many can be placed at once
+    if (global_config.nice_items.bombs) {
+        patch::CodePatcher p(0xd52958);
+        p.WriteInst(inst::Movz(reg::W8, 1));
+    }
+
+    // Nice Hookshot - hookshot any surface
+    if (global_config.nice_items.hookshot) {
+        p.Seek(0xd7f188);
+        p.WriteInst(inst::Movz(reg::W20, 3));
+    }
+
+    // Nice Magic Rod - no projectile count limit
+    if (global_config.nice_items.rod) {
+        p.Seek(0xd51698);
+        p.WriteInst(inst::CmpImmediate(reg::X19, 0x10));
+    }
+
+    // Lv1 Sword Beams - not sure if we want to keep
+    if (global_config.nice_items.sword) {
+        p.Seek(0xde1ba8);
+        p.Write(0x3942A109); // ldrb w9, [x8, #0xa8]
+    }
+}
+
+void oneHitKO() {
+    patch::CodePatcher p(0xd4c754); // normal damage
+    p.WriteInst(inst::SubImmediate(reg::W22, reg::W8, 80));
+
+    p.Seek(0xdb1f74); // fall/drown damage
+    p.WriteInst(inst::SubImmediate(reg::W8, reg::W21, 80));
+
+    p.Seek(0xd7c8c8); // trap damage
+    p.WriteInst(inst::SubImmediate(reg::W20, reg::W8, 80));
+
+    p.Seek(0xd96950); // blaino damage
+    p.WriteInst(inst::SubImmediate(reg::W8, reg::W23, 80));
 }
 
 void randoCosmeticPatches() {
@@ -48,8 +89,11 @@ void runCodePatches() {
     if (global_config.blur_removal.enabled) {
         blurRemoval();
     }
+    if (global_config.nice_items.enabled) {
+        niceItems();
+    }
     if (global_config.randomizer_compatible.enabled) {
-        randoCosmeticPatches()
+        randoCosmeticPatches();
         randoFixes();
     }
     // randoOptional();

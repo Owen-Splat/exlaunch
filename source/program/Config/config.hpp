@@ -24,6 +24,10 @@ struct PatchConfig {
 
     struct {
         bool enabled;
+        bool bombs;
+        bool hookshot;
+        bool rod;
+        bool sword;
     } nice_items;
 
     struct {
@@ -89,6 +93,9 @@ struct PatchConfig {
             else if (current_section == "control_scheme") {
                 parseControlScheme(key, value);
             }
+            else if (current_section == "nice_items") {
+                parseNiceItems(key, value);
+            }
             else if (current_section == "blur_removal") {
                 parseBlurRemoval(key, value);
             }
@@ -121,6 +128,25 @@ struct PatchConfig {
             else {
                 control_scheme.movement = MovementMode::Standard;
             }
+        }
+    }
+
+    void parseNiceItems(std::string key, std::string value) {
+        if (key == "bombs" && value == "true") {
+            nice_items.bombs = true;
+            nice_items.enabled = true;
+        }
+        else if (key == "hookshot" && value == "true") {
+            nice_items.hookshot = true;
+            nice_items.enabled = true;
+        }
+        else if (key == "rod" && value == "true") {
+            nice_items.rod = true;
+            nice_items.enabled = true;
+        }
+        else if (key == "sword" && value == "true") {
+            nice_items.sword = true;
+            nice_items.enabled = true;
         }
     }
 
