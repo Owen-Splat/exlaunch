@@ -51,10 +51,40 @@ void oneHitKO() {
     p.WriteInst(inst::SubImmediate(reg::W8, reg::W23, 80));
 }
 
-void randoCosmeticPatches() {
+void randoFixes() {
+    // remove checking ShieldGet flag so that the user can immediately pause
+    // this is important since Tarin uses the ShieldGet flag as well but we may want custom spawn locations
+    patch::CodePatcher p(0xeacf2c);
+    p.WriteInst(inst::Movz(reg::W0, 1));
+
+    // ignore companions when opening color dungeon
+    p.Seek(0xc868d4);
+    p.WriteInst(inst::Nop());
+    p.Seek(0xc868d8);
+    p.WriteInst(inst::CmpImmediate(reg::W8, 0));
+
+    // Make EnemySoldierIronBall ignore GoldenLeaf[4]
+    p.Seek(0x6a62f8);
+    p.WriteInst(inst::Nop());
+
+    // Rewrite FlowControl::CompareInt event to check if the values are equal
+    // To match FlowControl::CompareString, it returns 0 if they are equal, 1 if not
+    // This allows us to check the index of items through the EventFlow system
+    // The main purpose of this will be for Keysanity to know which dungeon text to display
+    p.Seek(0x8049d8);
+    p.WriteInst(inst::Movz(reg::W8, 1));
+
+    // Make bombs, arrows, and power give 3 for a single drop
+    p.Seek(0x88f674);
+    p.WriteInst(inst::Movz(reg::W4, 3));
+    p.Seek(0x895674);
+    p.WriteInst(inst::Movz(reg::W4, 3));
+    p.Seek(0x894740);
+    p.WriteInst(inst::Movz(reg::X7, 3));
+
     // NPCs hold the proper item model before giving it to the player
     // This is done by changing the itemID of the model to a new Items.gsheet entry with the proper model
-    patch::CodePatcher p(0x9fa0f0); // bay-fisherman
+    p.Seek(0x9fa0f0); // bay-fisherman
     p.WriteInst(inst::Movz(reg::W4, 200));
     p.Seek(0xa40374); // syrup
     p.WriteInst(inst::Movz(reg::W3, 201));
@@ -72,16 +102,27 @@ void randoCosmeticPatches() {
     p.WriteInst(inst::Branch(0xd799f8 - 0xd79804));
 }
 
-void randoFixes() {
-    // remove checking ShieldGet flag so that the user can immediately pause
-    // this is important since Tarin uses the ShieldGet flag as well but we may want custom spawn locations
-    patch::CodePatcher p(0xeacf2c);
-    p.WriteInst(inst::Movz(reg::W0, 1));
+void randoOptional() {
+    patch::CodePatcher p(0);
 
     // free book - read the book of secrets without the magnifying lens
-    // not sure if this setting will be kept or baked in as a default feature
-    p.Seek(0x7e3004);
-    p.WriteInst(inst::Movz(reg::W0, 1));
+    if (global_config.randomizer.free_book) {
+        p.Seek(0x7e3004);
+        p.WriteInst(inst::Movz(reg::W0, 1));
+    }
+
+    // stealing
+    p.Seek(0xa4a8f0);
+    switch (global_config.randomizer.stealing) {
+        case StealingMode::Always: // sword is not required to be able to steal
+            p.WriteInst(inst::Branch(0xa4a910 - 0xa4a8f0));
+            break;
+        case StealingMode::Never: // player cannot steal no matter what
+            p.WriteInst(inst::Nop());
+            break;
+        case _:
+            break;
+    }
 }
 
 void runCodePatches() {
@@ -92,10 +133,11 @@ void runCodePatches() {
     if (global_config.nice_items.enabled) {
         niceItems();
     }
-    if (global_config.randomizer_compatible.enabled) {
-        randoCosmeticPatches();
-        randoFixes();
+    if (global_config.ohko.enabled) {
+        oneHitKO();
     }
-    // randoOptional();
-    // testPatches();
+    if (global_config.randomizer.enabled) {
+        randoFixes();
+        randoOptional();
+    }
 }

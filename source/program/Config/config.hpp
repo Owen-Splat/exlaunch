@@ -11,6 +11,12 @@ enum MovementMode {
     DPad
 };
 
+enum StealingMode {
+    Standard,
+    Always,
+    Never
+};
+
 struct PatchConfig {
     bool initialized = false;
 
@@ -40,7 +46,13 @@ struct PatchConfig {
 
     struct {
         bool enabled;
-    } randomizer_compatible;
+    } ohko;
+
+    struct {
+        bool enabled;
+        bool free_book;
+        StealingMode stealing;
+    } randomizer;
 
     void parse(std::string config_str) {
         std::stringstream ss(config_str);
@@ -102,8 +114,11 @@ struct PatchConfig {
             else if (current_section == "speed_hack") {
                 parseSpeedHack(key, value);
             }
-            else if (current_section == "randomizer_compatible") {
-                parseRandomizerCompatible(key, value);
+            else if (current_section == "ohko") {
+                parseOHKO(key, value);
+            }
+            else if (current_section == "randomizer") {
+                parseRandomizer(key, value);
             }
         }
 
@@ -132,21 +147,24 @@ struct PatchConfig {
     }
 
     void parseNiceItems(std::string key, std::string value) {
-        if (key == "bombs" && value == "true") {
+        if (value == "true") {
+            nice_items.enabled = true;
+        }
+        else {
+            return;
+        }
+
+        if (key == "bombs") {
             nice_items.bombs = true;
-            nice_items.enabled = true;
         }
-        else if (key == "hookshot" && value == "true") {
+        else if (key == "hookshot") {
             nice_items.hookshot = true;
-            nice_items.enabled = true;
         }
-        else if (key == "rod" && value == "true") {
+        else if (key == "rod") {
             nice_items.rod = true;
-            nice_items.enabled = true;
         }
-        else if (key == "sword" && value == "true") {
+        else if (key == "sword") {
             nice_items.sword = true;
-            nice_items.enabled = true;
         }
     }
 
@@ -162,9 +180,33 @@ struct PatchConfig {
         }
     }
 
-    void parseRandomizerCompatible(std::string key, std::string value) {
+    void parseOHKO(std::string key, std::string value) {
         if (key == "enabled" && value == "true") {
-            randomizer_compatible.enabled = true;
+            ohko.enabled = true;
+        }
+    }
+
+    void parseRandomizer(std::string key, std::string value) {
+        if (value == "true") {
+            randomizer.enabled = true;
+        }
+        else {
+            return;
+        }
+
+        if (key == "free_book") {
+            randomizer.free_book = true;
+        }
+        else if (key == "stealing") {
+            if (value == "always") {
+                randomizer.stealing = StealingMode::Always;
+            }
+            else if (value == "never") {
+                randomizer.stealing = StealingMode::Never;
+            }
+            else {
+                randomizer.stealing = StealingMode::Standard;
+            }
         }
     }
 };
