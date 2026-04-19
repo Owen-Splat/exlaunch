@@ -10,6 +10,7 @@
 #include "Hooks/Common/inventory.hpp"
 #include "Hooks/Common/level.hpp"
 #include "Hooks/Mods/controls.hpp"
+#include "Hooks/Randomizer/enemies.hpp"
 #include <string>
 
 // Get rid of play reports
@@ -60,6 +61,9 @@ extern "C" void exl_main(void* x0, void* x1) {
 
     // install mod hooks
     Controls::InstallHooks();
+
+    // install randomizer specific hooks
+    EnemyRandomizer::installHooks();
 
     // Get rid of play report logging
     PlayReport__Add::InstallAtOffset(0x1432450);

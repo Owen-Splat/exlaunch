@@ -5,13 +5,13 @@
 #include <algorithm>
 #include <cctype>
 
-enum MovementMode {
+enum class MovementMode {
     Standard,
     Extra,
     DPad
 };
 
-enum StealingMode {
+enum class StealingMode {
     Standard,
     Always,
     Never
@@ -52,6 +52,7 @@ struct PatchConfig {
         bool enabled;
         bool free_book;
         StealingMode stealing;
+        bool enemies;
     } randomizer;
 
     void parse(std::string config_str) {
@@ -207,6 +208,9 @@ struct PatchConfig {
             else {
                 randomizer.stealing = StealingMode::Standard;
             }
+        }
+        else if (key == "enemies") {
+            randomizer.enemies = true;
         }
     }
 };
