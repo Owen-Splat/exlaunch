@@ -12,9 +12,11 @@ void blurRemoval() {
 }
 
 void niceItems() {
+    patch::CodePatcher p(0);
+
     // Nice Bombs - no limit to how many can be placed at once
     if (global_config.nice_items.bombs) {
-        patch::CodePatcher p(0xd52958);
+        p.Seek(0xd52958);
         p.WriteInst(inst::Movz(reg::W8, 1));
     }
 
@@ -120,7 +122,7 @@ void randoOptional() {
         case StealingMode::Never: // player cannot steal no matter what
             p.WriteInst(inst::Nop());
             break;
-        case _:
+        case StealingMode::Standard:
             break;
     }
 }
