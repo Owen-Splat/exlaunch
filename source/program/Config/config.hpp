@@ -53,6 +53,7 @@ struct PatchConfig {
         bool free_book;
         StealingMode stealing;
         bool enemies;
+        bool enemy_sizes;
     } randomizer;
 
     void parse(std::string config_str) {
@@ -211,6 +212,9 @@ struct PatchConfig {
         }
         else if (key == "enemies") {
             randomizer.enemies = true;
+        }
+        else if (key == "enemy_sizes") {
+            randomizer.enemy_sizes = true;
         }
     }
 };
