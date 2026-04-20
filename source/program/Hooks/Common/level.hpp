@@ -1,6 +1,6 @@
 #pragma once
 
-extern std::string* currentLevel;
+extern std::string currentLevel;
 
 namespace LevelSystem {
     std::string GetCurrentLevel();
