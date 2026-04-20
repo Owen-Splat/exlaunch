@@ -29,7 +29,10 @@ std::vector<u16> getValidEnemies(u16 id) {
         vec.insert(vec.end(), std::begin(land_ids), std::end(land_ids));
         vec.insert(vec.end(), std::begin(air_ids), std::end(air_ids));
     }
-
+    else if (id == 0x4b || id == 0x4c || id == 0x4e || id == 0x4f) { // EnemyStretchyGhost and EnemyKarakoro color variants
+        vec.insert(vec.end(), std::begin(land_ids), std::end(land_ids));
+        vec.insert(vec.end(), std::begin(air_ids), std::end(air_ids));
+    }
     else if (std::find(std::begin(air_ids), std::end(air_ids), id) != std::end(air_ids)) {
         vec.insert(vec.end(), std::begin(air_ids), std::end(air_ids));
     }
@@ -44,6 +47,7 @@ std::vector<u16> getValidEnemies(u16 id) {
 
     else if (std::find(std::begin(water_ids), std::end(water_ids), id) != std::end(water_ids)) {
         vec.insert(vec.end(), std::begin(water_ids), std::end(water_ids));
+        vec.insert(vec.end(), std::begin(water_shallow_ids), std::end(water_shallow_ids));
     }
 
     else if (std::find(std::begin(water_2d_ids), std::end(water_2d_ids), id) != std::end(water_2d_ids)) {
@@ -96,51 +100,49 @@ bool isRequiredKill(u64 hash) {
     return false; // return false for now, need to compile a list of hashes
 }
 
-bool isEnemy;
-HOOK_DEFINE_INLINE(InterceptActorID) {
-    static void Callback(exl::hook::nx64::InlineCtx* ctx) {
-        EXL_ASSERT(global_config.initialized);
-        if (global_config.randomizer.enemies) {
-            isEnemy = false;
-            std::vector<u16> vec = getValidEnemies(ctx->W[8]);
-            if (vec.size() > 1) {
-                isEnemy = true;
-                u64* hash = reinterpret_cast<u64*>(ctx->X[26]);
-                if (!isRequiredKill(*hash)) {
-                    u16 new_enemy;
-                    do {
-                        new_enemy = vec[exl::util::GetRandomU64() % vec.size()];
-                    }
-                    while (!isEnemyValid(ctx->W[8], new_enemy));
-                    if (lastTen.size() >= 10) {
-                        lastTen.pop_front();
-                    }
-                    lastTen.push_back((int)new_enemy);
-                    new_enemy = randomizeEnemyVariants(new_enemy);
-                    ctx->W[8] = new_enemy;
-                }
-            }
-        }
-    }
-};
-
 struct Vector3 {
     float x;
     float y;
     float z;
 };
 
-HOOK_DEFINE_INLINE(InterceptActorScale) {
+HOOK_DEFINE_INLINE(InterceptActorLoad) {
     static void Callback(exl::hook::nx64::InlineCtx* ctx) {
         EXL_ASSERT(global_config.initialized);
-        if (global_config.randomizer.enemy_sizes) {
-            if (isEnemy) {
-                Vector3* scale = reinterpret_cast<Vector3*>(ctx->X[8]);
-                float scale_factor = exl::util::GetRandomF32(0.5f, 1.5f);
-                scale->x = scale_factor;
-                scale->y = scale_factor;
-                scale->z = scale_factor;
+        if (global_config.randomizer.enemies) {
+            u16* actorID = reinterpret_cast<u16*>(ctx->X[26] + 0xc);
+            std::vector<u16> vec = getValidEnemies(*actorID);
+            if (vec.size() > 1) {
+                u64* hash = reinterpret_cast<u64*>(ctx->X[26]);
+                if (!isRequiredKill(*hash)) {
+                    u16 new_enemy;
+                    do {
+                        new_enemy = vec[exl::util::GetRandomU64() % vec.size()];
+                    }
+                    while (!isEnemyValid(*actorID, new_enemy));
+                    if (lastTen.size() >= 10) {
+                        lastTen.pop_front();
+                    }
+                    lastTen.push_back((int)new_enemy);
+                    new_enemy = randomizeEnemyVariants(new_enemy);
+                    *actorID = new_enemy;
+                    // some enemies are rotated, we do not want them to randomize into an enemy that is rotation locked
+                    // while they still work, I just dont like how it looks
+                    f32* rotY = reinterpret_cast<f32*>(ctx->X[26] + 0x24);
+                    *rotY = 0.0f;
+                    rotY = nullptr;
+                }
+                hash = nullptr;
+                if (global_config.randomizer.enemy_sizes) {
+                    Vector3* scale = reinterpret_cast<Vector3*>(ctx->X[26] + 0x2c);
+                    float scale_factor = exl::util::GetRandomF32(0.5f, 1.5f);
+                    scale->x = scale_factor;
+                    scale->y = scale_factor;
+                    scale->z = scale_factor;
+                    scale = nullptr;
+                }
             }
+            actorID = nullptr;
         }
     }
 };
@@ -160,8 +162,7 @@ HOOK_DEFINE_INLINE(ObjTreasureBox__PopEnemy) {
 
 namespace EnemyRandomizer {
     void installHooks() {
-        InterceptActorID::InstallAtOffset(0x8e1858);
-        InterceptActorScale::InstallAtOffset(0x8e1b18);
+        InterceptActorLoad::InstallAtOffset(0x8e177c);
         ObjTreasureBox__PopEnemy::InstallAtOffset(0xca92c4);
     }
 }
