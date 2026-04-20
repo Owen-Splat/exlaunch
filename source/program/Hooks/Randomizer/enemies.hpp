@@ -1,17 +1,16 @@
 #pragma once
 #include "../lib.hpp"
+#include "Hooks/Common/level.hpp"
 #include <Config/config.hpp>
 #include <string>
-#include <algorithm>
 #include <iterator>
 #include <vector>
+#include <deque>
+#include <algorithm>
 
 // we want to group actors by types
 // we handle mixing types through code (flying enemies can be put on the ground for example)
-// normally we also have rules for enemies, like max 1 of an enemy per room, or a "blocking" enemy cant be put in the way
-// since the player can just reload the room for new enemies... I dont think we need to care about those rules
 // actors that needs params to not crash - 0x1e EnemyHidy - incorrect param means disguise model cannot load
-// TODO - remove blocking enemies (armos, urchins) and filter enemies that are too similar (shield/spear enemies)
 uint16_t land_ids[] = {0x1, 0x2, 0x3, 0x4, 0x5, 0x8, 0x9, 0xa, 0x12, 0x13, 0x14, 0x15, 0x16,
                     0x17, 0x1b, 0x1c, 0x1d, 0x22, 0x24, 0x25, 0x27, 0x28, 0x29, 0x2e, 0x2f,
                     0x30, 0x31, 0x32, 0x33, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c,
@@ -53,13 +52,63 @@ std::vector<uint16_t> getValidEnemies(uint16_t id) {
     return vec;
 }
 
+uint16_t blocking_ids[] = {0x3, 0x15, 0x16, 0x30, 0x41};
+uint16_t annoying_ids[] = {0x26, 0x3e, 0x48, 0x8, 0x9, 0x13, 0x14, 0x2e, 0x2f, 0x4d};
+std::deque<int> lastTen;
+bool isEnemyValid(uint16_t vanilla_id, uint16_t new_id) {
+    // if the enemy is vanilla then it is obviously valid :P
+    if (new_id == vanilla_id) {
+        return true;
+    }
+
+    // specific case where we want to block vires from spawning in the overworld
+    if (new_id == 0x26 && currentLevel == "Field") {
+        return false;
+    }
+
+    // make sure a non-blocking enemy is not changed into a blocking enemy
+    if (std::find(std::begin(blocking_ids), std::end(blocking_ids), new_id) != std::end(blocking_ids)) {
+        return false;
+    }
+
+    // prevent a powerful or annoying enemies from spawning too frequently
+    if (std::find(std::begin(annoying_ids), std::end(annoying_ids), new_id) != std::end(annoying_ids)) {
+        if (std::find(lastTen.begin(), lastTen.end(), (int)new_id) != lastTen.end()) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// The variants are just different colors but the same enemy effectively
+// We only include the first variant in the enemy pool so that they arent prominent
+uint16_t randomizeEnemyVariants(uint16_t id) {
+    if (id == 0x4a || id == 0x4d) {
+        id += exl::util::GetRandomU64() % 3;
+    }
+    return id;
+}
+
 HOOK_DEFINE_INLINE(CreateActorObject) {
     static void Callback(exl::hook::nx64::InlineCtx* ctx) {
         EXL_ASSERT(global_config.initialized);
         if (global_config.randomizer.enemies) {
             std::vector<uint16_t> vec = getValidEnemies(ctx->W[8]);
             if (vec.size() > 1) {
-                ctx->W[8] = vec[exl::util::GetRandomU64() % vec.size()];
+                uint16_t new_enemy;
+                do {
+                    new_enemy = vec[exl::util::GetRandomU64() % vec.size()];
+                }
+                while (!isEnemyValid(ctx->W[8], new_enemy));
+
+                if (lastTen.size() >= 10) {
+                    lastTen.pop_front();
+                }
+                lastTen.push_back((int)new_enemy);
+
+                new_enemy = randomizeEnemyVariants(new_enemy);
+                ctx->W[8] = new_enemy;
             }
         }
     }
