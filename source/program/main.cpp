@@ -53,9 +53,9 @@ extern "C" void exl_main(void* x0, void* x1) {
     nnMain::InstallAtOffset(0x1bbf0);
 
     // install common hooks
-    // AudioSystem::InstallHooks();
+    AudioSystem::InstallHooks();
     EventFlags::InstallHooks();
-    // InputSystem::InstallHooks();
+    InputSystem::InstallHooks();
     Inventory::InstallHooks();
     LevelSystem::InstallHooks();
 
