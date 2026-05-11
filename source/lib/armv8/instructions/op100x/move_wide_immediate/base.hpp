@@ -14,7 +14,7 @@ namespace exl::armv8::inst::impl::op100x {
         ACCESSOR(Imm16, 5, 21);
         ACCESSOR(Rd,    0, 5);
 
-        constexpr MoveWideImmediate(reg::Register reg, u8 opc, u8 hw, u16 imm) : Op100xInstruction(Op0) {
+        constexpr MoveWideImmediate(reg::Register reg, u8 opc, u8 hw, u32 imm) : Op100xInstruction(Op0) {
             SetSf(reg.Is64());
             SetOpc(opc);
             SetHw(hw);

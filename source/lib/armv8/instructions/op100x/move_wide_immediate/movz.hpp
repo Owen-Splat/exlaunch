@@ -8,7 +8,7 @@ namespace exl::armv8::inst {
 
         static constexpr u8 Opc = 0b10;
 
-        constexpr Movz(reg::Register reg, u16 imm, ShiftValue shift = ShiftValue_0) : MoveWideImmediate(reg, Opc, shift, imm) {}
+        constexpr Movz(reg::Register reg, u32 imm, ShiftValue shift = ShiftValue_0) : MoveWideImmediate(reg, Opc, shift, imm) {}
 
     };
 
