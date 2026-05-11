@@ -1,5 +1,4 @@
 #include "lib.hpp"
-#include "debug.hpp"
 #include "patches.hpp"
 #include "err.hpp"
 #include "Config/config.hpp"
@@ -11,6 +10,7 @@
 #include "Hooks/Common/level.hpp"
 #include "Hooks/Mods/controls.hpp"
 #include "Hooks/Randomizer/enemies.hpp"
+#include "Hooks/Randomizer/fishing.hpp"
 #include <string>
 
 // Get rid of play reports
@@ -53,9 +53,9 @@ extern "C" void exl_main(void* x0, void* x1) {
     nnMain::InstallAtOffset(0x1bbf0);
 
     // install common hooks
-    AudioSystem::InstallHooks();
+    // AudioSystem::InstallHooks();
     EventFlags::InstallHooks();
-    InputSystem::InstallHooks();
+    // InputSystem::InstallHooks();
     Inventory::InstallHooks();
     LevelSystem::InstallHooks();
 
@@ -64,6 +64,7 @@ extern "C" void exl_main(void* x0, void* x1) {
 
     // install randomizer specific hooks
     EnemyRandomizer::installHooks();
+    FishingTweaks::installHooks();
 
     // Get rid of play report logging
     PlayReport__Add::InstallAtOffset(0x1432450);

@@ -1,6 +1,5 @@
 #include "lib.hpp"
 #include "nn/hid.h"
-#include "debug.hpp"
 #include "Config/config.hpp"
 #include "Hooks/Common/input.hpp"
 #include <string>

@@ -2,7 +2,6 @@
 #include <cmath>
 #include <numbers>
 #include <Config/config.hpp>
-#include "Hooks/Common/input.hpp"
 
 const float SPEED_MULTIPLIER = 1.15f;
 

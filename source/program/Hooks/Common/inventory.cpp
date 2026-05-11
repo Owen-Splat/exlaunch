@@ -1,5 +1,5 @@
 #include "../lib.hpp"
-#include "debug.hpp"
+#include "Config/config.hpp"
 #include "Hooks/Common/eventflags.hpp"
 #include "Game/Data/inventory.hpp"
 #include <string>
@@ -96,7 +96,8 @@ const std::unordered_map<int, std::string> itemsDict = {
 // Other items will just use the original code
 HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
     static void Callback(int ID, int count, int index) {
-        if (DebugMode::enabled) {
+        EXL_ASSERT(global_config.initialized);
+        if (global_config.debug_mode.enabled) {
             std::string itemName = itemsDict.at(ID);
             std::string indexStr = "";
             if (ID == 22 || ID == 23 || ID == 58 || ID == 59 || ID == 114 || ID == 115 || ID == 116) {

@@ -1,7 +1,7 @@
 #pragma once
 #include "../lib.hpp"
 #include "Hooks/Common/level.hpp"
-#include <Config/config.hpp>
+#include "Config/config.hpp"
 #include <string>
 #include <iterator>
 #include <vector>

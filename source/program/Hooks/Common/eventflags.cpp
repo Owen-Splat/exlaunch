@@ -1,5 +1,5 @@
 #include "../lib.hpp"
-#include "debug.hpp"
+#include "Config/config.hpp"
 #include "symbols.hpp"
 #include <string>
 
@@ -23,10 +23,11 @@ HOOK_DEFINE_TRAMPOLINE(EventFlags__CheckFlag) {
 
 HOOK_DEFINE_TRAMPOLINE(EventFlags__SetFlag) {
     static void Callback(long arg1, long strAddr, uint arg3) {
+        EXL_ASSERT(global_config.initialized);
         bool flagState = !!arg3;
         if (EventFlags__CheckFlag::Callback(arg1, strAddr) != flagState) {
             Orig(arg1, strAddr, arg3);
-            if (DebugMode::enabled) {
+            if (global_config.debug_mode.enabled) {
                 std::string* strPtr = reinterpret_cast<std::string*>(strAddr);
                 std::string stateStr = flagState ? "true" : "false";
                 Logging.Log("Set flag '" + *strPtr + "' to " + stateStr);

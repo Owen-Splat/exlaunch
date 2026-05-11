@@ -22,6 +22,7 @@ namespace Game::Data::Inventory {
         Field Boomerang : 1;
         Field MagicRod : 1;
         Field Shovel : 1;
+
         Field MagicPowder : 1;
         Field RocsFeather : 1;
         Field PowerBraceletLv1 : 1;
@@ -99,6 +100,6 @@ namespace Game::Data::Inventory {
         uint8_t RareFishSign; // 0x122
     };
 
-    inline InventoryItems* Items = reinterpret_cast<InventoryItems*>(g_symbols["InventoryPtr"]);
+    inline InventoryItems** Items = reinterpret_cast<InventoryItems**>(g_symbols["InventoryPtr"]);
     inline uint8_t* Level = reinterpret_cast<uint8_t*>(g_symbols["LevelIndexPtr"]);
 }
