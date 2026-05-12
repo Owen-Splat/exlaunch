@@ -107,14 +107,9 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
             Logging.Log("Player has obtained '" + itemName + indexStr + "'");
         }
 
-        // Orig(ID, count, index); // non-rando mod makers should uncomment this and remove the rest of the function
-
-        // Add the item as normal if it is within the vanilla range
-        if (ID < 127) {
-            // Trade items will just use the GettingFlag, and we reimplement how dungeon items get added
-            if (ID < 29 || ID > 49) {
-                Orig(ID, count, index);
-            }
+        if (!global_config.randomizer.enabled) {
+            Orig(ID, count, index);
+            return;
         }
 
         // Automatically set item GettingFlags so that we dont need as many cases
@@ -124,15 +119,10 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
 
         uint8_t actualLevel = *Game::Data::Inventory::Level; // for dungeon items
 
-        // Some items need more than one flag set when obtained
-        // We also want to give max powder/bombs/arrows when getting bow or upgrades
         switch (ID) {
-            case 5: // Bow
-            case 125: // Arrow_MaxUp
+            case 5: // Bow and Arrow_MaxUp should both give max arrows
+            case 125:
                 Orig(60, 60, -1);
-                break;
-            case 43: // MagifyingLens - lens is the only trade item we want actually added
-                Orig(ID, count, index);
                 break;
             case 44: // Compass
             case 45: // DungeonMap
@@ -143,41 +133,42 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
                     Orig(ID, count, index);
                 }
                 else {
-                    // index is ignored for dungeon items, game uses a level byte to determine where to add the items in memory
-                    // so we'll assign ids to what the level byte would need to be, and edit the byte before and after orig code
+                    // index is normally ignored for dungeon items, game uses a level byte to determine where to add the items in memory
+                    // so we assign an index to the dungeon items and actually make use of it
+                    // set the level byte to the index and call the orig func, then set the level byte back
                     *Game::Data::Inventory::Level = index;
                     Orig(ID, count, index);
                     *Game::Data::Inventory::Level = actualLevel;
                 }
                 break;
-            case 50: // FullMoonCello
+            case 50: // FullMoonCello - additional flags
                 EventFlags::SetFlag("BowWowEvent", true);
                 EventFlags::SetFlag("DoorOpen_Btl_MoriblinCave_2A", false);
                 EventFlags::SetFlag("DoorOpen_Btl_MoriblinCave_1A", false);
                 break;
-            case 53: // SurfHarp
+            case 53: // SurfHarp - additional flags
                 EventFlags::SetFlag("GhostClear1", true);
                 EventFlags::SetFlag("Ghost2_Clear", true);
                 EventFlags::SetFlag("Ghost3_Clear", true);
                 EventFlags::SetFlag("Ghost4_Clear", true);
                 break;
-            case 113: // Bottle - TRY TO ACTUALLY FIX FISHING SO WE CAN GET RID OF THIS JANK WORKAROUND
-                if (index == 1) {
-                    EventFlags::SetFlag("Bottle1Get", true);
-                }
-                break;
-            case 123: // MagicPowder_MaxUp
+            case 123: // MagicPowder_MaxUp - give max powder if the player found the main source
                 if (EventFlags::CheckFlag("GetMagicPowder")) {
                     Orig(11, 40, -1);
                 }
                 break;
-            case 124: // Bomb_MaxUp
+            case 124: // Bomb_MaxUp - give max bombs if the player found the main source
                 if (EventFlags::CheckFlag("unused0424")) {
                     Orig(ID, count, index);
                     Orig(4, 60, -1);
                 }
                 break;
             default:
+                if (ID < 127) { // only add item if it is within the vanilla range
+                    if (ID < 29 && ID > 42) { // do not add trade items besides MagifyingLens
+                        Orig(ID, count, index);
+                    }
+                }
                 break;
         }
     }
