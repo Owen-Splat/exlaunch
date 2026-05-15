@@ -144,4 +144,10 @@ void runCodePatches() {
         randoFixes();
         randoOptional();
     }
+    // stable 60fps - idk if we want this always on?
+    // credits to HerculeHercule1 for the patch
+    patch::CodePatcher p(0x1019608);
+    p.WriteInst(inst::Nop());
+    p.Seek(0x1019628);
+    p.WriteInst(inst::Nop());
 }
