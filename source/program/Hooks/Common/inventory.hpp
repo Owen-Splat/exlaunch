@@ -165,7 +165,7 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
                 break;
             default:
                 if (ID < 127) { // only add item if it is within the vanilla range
-                    if (ID < 29 && ID > 42) { // do not add trade items besides MagifyingLens
+                    if (ID < 29 || ID > 42) { // do not add trade items besides MagifyingLens
                         Orig(ID, count, index);
                     }
                 }
