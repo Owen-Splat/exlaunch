@@ -84,19 +84,21 @@ namespace Game::Data::Inventory {
         uint8_t EquipX; // 0xa3
         uint8_t KillCount; // 0xa4
         uint8_t KillCountNoDamage; // 0xa5
-        uint16_t unk3;
+        uint16_t unk3; // 0xa6
         MainItemBits MainItems; // 0xa8
         uint16_t unk4;
         ExtraItemBits ExtraItems; // 0xac
-        char unk6;
-        uint64_t unk5; // 0xb0
-        char unk7[0xa];
+        char unk5;
+        uint64_t unk6; // 0xb0
+        char unk7[0x8];
+        uint8_t BottledFairies; // 0xc0
+        char unk8; // 0xc1
         uint8_t GoldenLeaves; // 0xc2
-        char unk8[0x25];
+        char unk9[0x25];
         uint32_t Figurines; // 0xe8
-        char unk9[0x34];
+        char unk10[0x34];
         bool HeroMode; // 0x120
-        char unk10;
+        char unk11;
         uint8_t RareFishSign; // 0x122
     };
 
