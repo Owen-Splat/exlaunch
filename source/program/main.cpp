@@ -3,28 +3,8 @@
 #include "err.hpp"
 #include "Config/config.hpp"
 #include "Config/file_handler.hpp"
-#include "Hooks/Common/audio.hpp"
-#include "Hooks/Common/eventflags.hpp"
-#include "Hooks/Common/input.hpp"
-#include "Hooks/Common/inventory.hpp"
-#include "Hooks/Common/level.hpp"
-#include "Hooks/Mods/controls.hpp"
-#include "Hooks/Randomizer/enemies.hpp"
-#include "Hooks/Randomizer/fishing.hpp"
+#include "Hooks/modloader.hpp"
 #include <string>
-
-// Get rid of play reports
-HOOK_DEFINE_REPLACE(PlayReport__Add) {
-    static void Callback(long arg1, long arg2) {
-        
-    }
-};
-
-HOOK_DEFINE_REPLACE(PlayReport__Save) {
-    static void Callback(long arg1) {
-        
-    }
-};
 
 PatchConfig global_config;
 
@@ -43,6 +23,9 @@ HOOK_DEFINE_TRAMPOLINE(nnMain){
         }
         global_config.parse(config_str);
         runCodePatches();
+        ModLoader::InstallCommonHooks();
+        ModLoader::InstallRandomizerHooks();
+        ModLoader::InstallMods();
         Orig();
     }
 };
@@ -51,24 +34,6 @@ extern "C" void exl_main(void* x0, void* x1) {
     /* Setup hooking environment. */
     exl::hook::Initialize();
     nnMain::InstallAtOffset(0x1bbf0);
-
-    // install common hooks
-    // AudioSystem::InstallHooks();
-    EventFlags::InstallHooks();
-    // InputSystem::InstallHooks();
-    Inventory::InstallHooks();
-    LevelSystem::InstallHooks();
-
-    // install mod hooks
-    Controls::InstallHooks();
-
-    // install randomizer specific hooks
-    EnemyRandomizer::installHooks();
-    FishingTweaks::installHooks();
-
-    // Get rid of play report logging
-    PlayReport__Add::InstallAtOffset(0x1432450);
-    PlayReport__Save::InstallAtOffset(0x1432460);
 }
 
 extern "C" NORETURN void exl_exception_entry() {

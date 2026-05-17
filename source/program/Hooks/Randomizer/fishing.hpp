@@ -21,7 +21,7 @@ HOOK_DEFINE_INLINE(TagFishingManager__CheckCanSpawnBottle) {
 };
 
 namespace FishingTweaks {
-    void installHooks() {
+    void InstallHooks() {
         TagFishingManager__CheckCanSpawnBottle::InstallAtOffset(0xe16da4);
     }
 }

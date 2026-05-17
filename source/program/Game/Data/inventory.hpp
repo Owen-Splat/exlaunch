@@ -5,12 +5,11 @@
 namespace Game::Data::Inventory {
     typedef bool Field;
 
-    enum class Companion : uint8_t {
-        Alone,
-        BowWow,
-        Marin,
-        Ghost,
-        Rooster
+    struct CompanionBits {
+        Field BowWow : 1;
+        Field Marin : 1;
+        Field Ghost : 1;
+        Field Rooster : 1;
     };
 
     struct MainItemBits {
@@ -75,7 +74,7 @@ namespace Game::Data::Inventory {
         uint8_t TradeItem; // 0x9a
         uint8_t Songs; // 0x9b
         UpgradeItemBits UpgradeItems; // 0x9c
-        Companion Follower; // 0x9d
+        CompanionBits Companions; // 0x9d
         uint8_t BombCount; // 0x9e
         uint8_t ArrowCount; // 0x9f
         uint8_t PowderCount; // 0xa0

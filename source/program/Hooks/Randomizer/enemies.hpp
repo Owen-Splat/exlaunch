@@ -161,7 +161,7 @@ HOOK_DEFINE_INLINE(ObjTreasureBox__PopEnemy) {
 };
 
 namespace EnemyRandomizer {
-    void installHooks() {
+    void InstallHooks() {
         InterceptActorLoad::InstallAtOffset(0x8e177c);
         ObjTreasureBox__PopEnemy::InstallAtOffset(0xca92c4);
     }
