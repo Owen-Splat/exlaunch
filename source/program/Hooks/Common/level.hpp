@@ -7,7 +7,6 @@
 
 inline std::string prevLevel = "";
 inline std::string currentLevel = "";
-bool doneOnce = false;
 
 HOOK_DEFINE_TRAMPOLINE(SetCurrentLevel) {
     static void Callback(long arg1, long arg2, long arg3, long arg4, long arg5) {
@@ -18,12 +17,6 @@ HOOK_DEFINE_TRAMPOLINE(SetCurrentLevel) {
         currentLevel = *levelNamePtr;
         if (global_config.debug_mode.enabled) {
             Logging.Log(currentLevel);
-        }
-        if (!doneOnce) {
-            (*Game::Data::Inventory::Items)->Companions.BowWow = true;
-            (*Game::Data::Inventory::Items)->Companions.Marin = false;
-            (*Game::Data::Inventory::Items)->Companions.Ghost = false;
-            (*Game::Data::Inventory::Items)->Companions.Rooster = true;
         }
     }
 };

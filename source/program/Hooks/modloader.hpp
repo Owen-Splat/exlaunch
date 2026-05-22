@@ -9,7 +9,9 @@
 #include "Hooks/Randomizer/enemies.hpp"
 #include "Hooks/Randomizer/fishing.hpp"
 #include "Hooks/Randomizer/markers.hpp"
+#include "Hooks/Randomizer/seashells.hpp"
 #include "Hooks/Mods/controls.hpp"
+#include "Hooks/Mods/fixes.hpp"
 
 namespace ModLoader {
     void InstallCommonHooks() {
@@ -26,9 +28,11 @@ namespace ModLoader {
         EnemyRandomizer::InstallHooks();
         FishingTweaks::InstallHooks();
         // MarkerTweaks::InstallHooks(); // unfinished
+        // SeashellRandomizer::InstallHooks(); // unfinished
     }
 
     void InstallMods() {
         Controls::InstallHooks();
+        GeneralFixes::InstallHooks();
     }
 }
