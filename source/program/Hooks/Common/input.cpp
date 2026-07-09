@@ -2,6 +2,8 @@
 #include "nn/hid.h"
 #include "Config/config.hpp"
 #include "Hooks/Common/input.hpp"
+#include <Game/framework.hpp>
+#include <Game/Actors/player.hpp>
 #include <string>
 
 // Store previous and current buttons to be able to tell when a button was just pressed rather than held
@@ -68,6 +70,13 @@ namespace InputSystem {
     void MainLoop(nn::hid::NpadFullKeyState pad) {
         prevButtons = newButtons;
         newButtons = pad.mButtons;
+        if (IsButtonJustPressed(NpadButton::Down)) {
+            Game::Framework* fmwk = Game::GetFramework();
+            if (fmwk != 0) {
+                // Game::Actors::Player* mPlayer = fmwk->mPlayer;
+                Logging.Log(std::to_string(fmwk->mFrameCount));
+            }
+        }
     }
 
     void InstallHooks() {

@@ -150,4 +150,9 @@ void runCodePatches() {
     p.WriteInst(inst::Nop());
     p.Seek(0x1019628);
     p.WriteInst(inst::Nop());
+
+    // Remove the actual call to the drop table for AreaShellDropper
+    // we will then set the actor switch after the vanilla func runs
+    p.Seek(0x856e4);
+    p.WriteInst(inst::Nop());
 }

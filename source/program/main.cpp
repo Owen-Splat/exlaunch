@@ -9,7 +9,7 @@
 PatchConfig global_config;
 
 HOOK_DEFINE_TRAMPOLINE(nnMain){
-    static void Callback(){
+    static void Callback() {
         R_ABORT_UNLESS(FileHandler::MountSD());
         std::string config_str;
         if (R_FAILED(FileHandler::ReadFile("sd:/config/lasr-exl/config.ini", config_str))) {
@@ -25,7 +25,7 @@ HOOK_DEFINE_TRAMPOLINE(nnMain){
         runCodePatches();
         ModLoader::InstallCommonHooks();
         ModLoader::InstallRandomizerHooks();
-        ModLoader::InstallMods();
+        // ModLoader::InstallMods();
         Orig();
     }
 };

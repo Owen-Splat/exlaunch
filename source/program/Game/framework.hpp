@@ -3,7 +3,7 @@
 #include "symbols.hpp"
 #include "Game/actorsystem.hpp"
 #include "Game/gamestate.hpp"
-#include "Game/player.hpp"
+#include "Game/Actors/player.hpp"
 
 namespace Game {
     struct Framework {
@@ -17,12 +17,8 @@ namespace Game {
         uint32_t mFrameCount; // 0x4d4
     };
 
-    inline Framework* getFramework() {
-        uintptr_t* fwPtr = reinterpret_cast<uintptr_t*>(g_symbols["FrameworkPtr"]);
-        Framework* framework = reinterpret_cast<Framework*>(*fwPtr);
-        if (framework->mPlayer == nullptr) {
-            return nullptr;
-        }
-        return framework;
+    inline Framework* GetFramework() {
+        Framework** fwPtr = reinterpret_cast<Framework**>(g_symbols["FrameworkPtr"]);
+        return *fwPtr;
     }
 }

@@ -106,47 +106,6 @@ struct Vector3 {
     float z;
 };
 
-HOOK_DEFINE_INLINE(InterceptActorLoad) {
-    static void Callback(exl::hook::nx64::InlineCtx* ctx) {
-        EXL_ASSERT(global_config.initialized);
-        if (global_config.randomizer.enemies) {
-            u16* actorID = reinterpret_cast<u16*>(ctx->X[26] + 0xc);
-            std::vector<u16> vec = getValidEnemies(*actorID);
-            if (vec.size() > 1) {
-                u64* hash = reinterpret_cast<u64*>(ctx->X[26]);
-                if (!isRequiredKill(*hash)) {
-                    u16 new_enemy;
-                    do {
-                        new_enemy = vec[exl::util::GetRandomU64() % vec.size()];
-                    }
-                    while (!isEnemyValid(*actorID, new_enemy));
-                    if (lastTen.size() >= 10) {
-                        lastTen.pop_front();
-                    }
-                    lastTen.push_back((int)new_enemy);
-                    new_enemy = randomizeEnemyVariants(new_enemy);
-                    *actorID = new_enemy;
-                    // some enemies are rotated, we do not want them to randomize into an enemy that is rotation locked
-                    // while they still work, I just dont like how it looks
-                    f32* rotY = reinterpret_cast<f32*>(ctx->X[26] + 0x24);
-                    *rotY = 0.0f;
-                    rotY = nullptr;
-                }
-                hash = nullptr;
-                if (global_config.randomizer.enemy_sizes) {
-                    Vector3* scale = reinterpret_cast<Vector3*>(ctx->X[26] + 0x2c);
-                    float scale_factor = exl::util::GetRandomF32(0.5f, 1.5f);
-                    scale->x = scale_factor;
-                    scale->y = scale_factor;
-                    scale->z = scale_factor;
-                    scale = nullptr;
-                }
-            }
-            actorID = nullptr;
-        }
-    }
-};
-
 // although pretty much anything can work, these are ones that look the best
 // we can easily add more later if we want
 uint16_t chest_ids[] = {0xc, 0x10, 0x12, 0x19, 0x1b, 0x1c, 0x1d, 0x25, 0x34, 0x3c};
@@ -161,8 +120,43 @@ HOOK_DEFINE_INLINE(ObjTreasureBox__PopEnemy) {
 };
 
 namespace EnemyRandomizer {
+    void RandomizeEnemy(u64 actorDataOffset) {
+        u16* actorID = reinterpret_cast<u16*>(actorDataOffset + 0xc);
+        std::vector<u16> vec = getValidEnemies(*actorID);
+        if (vec.size() > 1) {
+            u64* hash = reinterpret_cast<u64*>(actorDataOffset);
+            if (!isRequiredKill(*hash)) {
+                u16 new_enemy;
+                do {
+                    new_enemy = vec[exl::util::GetRandomU64() % vec.size()];
+                }
+                while (!isEnemyValid(*actorID, new_enemy));
+                if (lastTen.size() >= 10) {
+                    lastTen.pop_front();
+                }
+                lastTen.push_back((int)new_enemy);
+                new_enemy = randomizeEnemyVariants(new_enemy);
+                *actorID = new_enemy;
+                // some enemies are rotated, we do not want them to randomize into an enemy that is rotation locked
+                // while they still work, I just dont like how it looks
+                f32* rotY = reinterpret_cast<f32*>(actorDataOffset + 0x24);
+                *rotY = 0.0f;
+                rotY = nullptr;
+            }
+            hash = nullptr;
+            if (global_config.randomizer.enemy_sizes) {
+                Vector3* scale = reinterpret_cast<Vector3*>(actorDataOffset + 0x2c);
+                float scale_factor = exl::util::GetRandomF32(0.5f, 1.5f);
+                scale->x = scale_factor;
+                scale->y = scale_factor;
+                scale->z = scale_factor;
+                scale = nullptr;
+            }
+        }
+        actorID = nullptr;
+    }
+
     void InstallHooks() {
-        InterceptActorLoad::InstallAtOffset(0x8e177c);
         ObjTreasureBox__PopEnemy::InstallAtOffset(0xca92c4);
     }
 }

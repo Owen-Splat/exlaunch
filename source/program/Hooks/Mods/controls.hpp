@@ -3,6 +3,9 @@
 #include <cmath>
 #include <numbers>
 #include <Config/config.hpp>
+#include <Game/framework.hpp>
+#include <Game/Actors/player.hpp>
+#include <string>
 
 inline const float SPEED_MULTIPLIER = 1.15f;
 
@@ -42,6 +45,15 @@ HOOK_DEFINE_INLINE(PowerSwimSpeedMultiplier) {
     }
 };
 
+HOOK_DEFINE_TRAMPOLINE(PlayerDamageKnockback) {
+    static void Callback(long arg1, long arg2, long arg3, uint8_t arg4, long arg5, long arg6) {
+        Orig(arg1, arg2, arg3, arg4, arg5, arg6);
+        Game::Framework* fmwk = Game::GetFramework();
+        Game::Actors::Player* mPlayer = fmwk->mPlayer;
+        Logging.Log(std::to_string(mPlayer->playerCollision->vel.x));
+    }
+};
+
 // We replace the function for mapping 8 directions with our own code that maps to 360 degrees of movement
 HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
     static int Callback(double arg1, float x, float y) {
@@ -65,19 +77,22 @@ HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
 
 namespace Controls {
     void InstallHooks() {
-        // walk
-        BaseWalkSpeedMultiplier::InstallAtOffset(0xdcdea4);
-        PowerWalkSpeedMultiplier::InstallAtOffset(0xdcff24);
+        // // walk
+        // BaseWalkSpeedMultiplier::InstallAtOffset(0xdcdea4);
+        // PowerWalkSpeedMultiplier::InstallAtOffset(0xdcff24);
 
-        // shield walk
-        BaseWalkSpeedMultiplier::InstallAtOffset(0xdb80a8);
-        PowerWalkSpeedMultiplier::InstallAtOffset(0xdb8eac);
+        // // shield walk
+        // BaseWalkSpeedMultiplier::InstallAtOffset(0xdb80a8);
+        // PowerWalkSpeedMultiplier::InstallAtOffset(0xdb8eac);
 
-        // swim
-        BaseSwimSpeedMultiplier::InstallAtOffset(0xdde288);
-        PowerSwimSpeedMultiplier::InstallAtOffset(0xddf128);
+        // // swim
+        // BaseSwimSpeedMultiplier::InstallAtOffset(0xdde288);
+        // PowerSwimSpeedMultiplier::InstallAtOffset(0xddf128);
 
-        // 360 movement
-        PlayerLink__SnapDirection::InstallAtOffset(0xded9f0);
+        // // 360 movement
+        // PlayerLink__SnapDirection::InstallAtOffset(0xded9f0);
+
+        // test
+        PlayerDamageKnockback::InstallAtOffset(0xd249c0);
     }
 }

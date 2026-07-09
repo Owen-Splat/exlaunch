@@ -3,6 +3,11 @@
 #include "Game/entity.hpp"
 
 namespace Game {
+    struct Vec2 {
+        float x;
+        float y;
+    };
+
     // Vec3 still pads to 0x10 bytes just like Vec4, we use both for clarity
     struct Vec3 {
         float x;
