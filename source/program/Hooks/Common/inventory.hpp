@@ -98,14 +98,14 @@ inline const std::unordered_map<int, std::string> itemsDict = {
 HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
     static void Callback(int ID, int count, int index) {
         EXL_ASSERT(global_config.initialized);
-        if (global_config.debug_mode.enabled) {
-            std::string itemName = itemsDict.at(ID);
-            std::string indexStr = "";
-            if (ID == 22 || ID == 23 || ID == 58 || ID == 59 || ID == 114 || ID == 115 || ID == 116) {
-                indexStr = "[" + std::to_string(index) + "]";
-            }
-            Logging.Log("Player has obtained '" + itemName + indexStr + "'");
-        }
+        // if (global_config.debug_mode.enabled) {
+        //     std::string itemName = itemsDict.at(ID);
+        //     std::string indexStr = "";
+        //     if (ID == 22 || ID == 23 || ID == 58 || ID == 59 || ID == 114 || ID == 115 || ID == 116) {
+        //         indexStr = "[" + std::to_string(index) + "]";
+        //     }
+        //     Logging.Log("Player has obtained '" + itemName + indexStr + "'");
+        // }
 
         if (!global_config.randomizer.enabled) {
             Orig(ID, count, index);
@@ -122,10 +122,14 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
         switch (ID) {
             case 4: // Bomb
                 if ((*Game::Data::Inventory::Items)->MainItems.Bomb) {
-                    Orig(ID, 3, index); // add 3 bombs if the player already has gottem some
+                    // add 3 bombs instead of 1 if the player already has some
+                    if (count == 1) {
+                        count = 3;
+                    }
+                    Orig(ID, count, index);
                 }
                 else {
-                    Orig(ID, 60, index);
+                    Orig(ID, 60, index); // give max bombs if not
                 }
                 break;
             case 5: // Bow
@@ -134,7 +138,11 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
                 break;
             case 11: // MagicPowder
                 if ((*Game::Data::Inventory::Items)->MainItems.MagicPowder) {
-                    Orig(ID, 3, index);
+                    // add 3 powder instead of 1 if the player already has some
+                    if (count == 1) {
+                        count = 3;
+                    }
+                    Orig(ID, count, index);
                 }
                 else {
                     Orig(ID, 40, index);
@@ -171,7 +179,10 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
                 Orig(ID, count, index);
                 break;
             case 60: // arrow
-                Orig(ID, 3, index);
+                if (count == 1) {
+                    count = 3;
+                }
+                Orig(ID, count, index);
                 break;
             case 123: // MagicPowder_MaxUp - give max powder if the player found the main source
                 Orig(ID, count, index);
