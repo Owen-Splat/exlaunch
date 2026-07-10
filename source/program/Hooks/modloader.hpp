@@ -22,23 +22,23 @@ namespace ModLoader {
         // AudioSystem::InstallHooks();
         EventFlags::InstallHooks();
         // InputSystem::InstallHooks();
-        // Inventory::InstallHooks();
-        // LevelSystem::InstallHooks();
-        // PlayReport::InstallHooks();
+        Inventory::InstallHooks();
+        LevelSystem::InstallHooks();
+        PlayReport::InstallHooks();
     }
 
     void InstallRandomizerHooks() {
         // CompanionTweaks::InstallHooks(); // unfinished
         // EnemyRandomizer::InstallHooks();
-        // FishingTweaks::InstallHooks();
+        FishingTweaks::InstallHooks();
         // MarkerTweaks::InstallHooks(); // unfinished
-        SeashellRandomizer::InstallHooks(); // unfinished
+        SeashellRandomizer::InstallHooks();
         // ActorReader::InstallHooks();
     }
 
     void InstallMods() {
         // Controls::InstallHooks();
         // GeneralFixes::InstallHooks();
-        TestMods::InstallHooks();
+        // TestMods::InstallHooks();
     }
 }

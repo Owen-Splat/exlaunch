@@ -79,12 +79,13 @@ void randoFixes() {
     p.WriteInst(inst::Movz(reg::W8, 1));
 
     // Make bombs, arrows, and power give 3 for a single drop
-    p.Seek(0x88f674);
-    p.WriteInst(inst::Movz(reg::W4, 3));
-    p.Seek(0x895674);
-    p.WriteInst(inst::Movz(reg::W4, 3));
-    p.Seek(0x894740);
-    p.WriteInst(inst::Movz(reg::X7, 3));
+    // CAUSES A CRASH WHEN IT TRIES TO DROP WITHOUT THE FLAG???
+    // p.Seek(0x88f674);
+    // p.WriteInst(inst::Movz(reg::W4, 3));
+    // p.Seek(0x895674);
+    // p.WriteInst(inst::Movz(reg::W4, 3));
+    // p.Seek(0x894740);
+    // p.WriteInst(inst::Movz(reg::X7, 3));
 
     // NPCs hold the proper item model before giving it to the player
     // This is done by changing the itemID of the model to a new Items.gsheet entry with the proper model
@@ -104,6 +105,16 @@ void randoFixes() {
     p.WriteInst(inst::Branch(0xd799f8 - 0xd79814));
     p.Seek(0xd79804);
     p.WriteInst(inst::Branch(0xd799f8 - 0xd79804));
+
+    // item actors ignore inventory for spawn condition
+    // this works by forcing the condition to false, making it use the actor switch flag instead
+    p.Seek(0x8c45b8);
+    p.WriteInst(inst::Movz(reg::W0, 0));
+
+    // Remove the actual call to the drop table for AreaShellDropper
+    // we will then set the actor switch in its place
+    p.Seek(0x856e4);
+    p.WriteInst(inst::Nop());
 }
 
 void randoOptional() {
@@ -144,15 +155,10 @@ void runCodePatches() {
         randoFixes();
         randoOptional();
     }
-    // stable 60fps - idk if we want this always on?
-    // credits to HerculeHercule1 for the patch
-    patch::CodePatcher p(0x1019608);
-    p.WriteInst(inst::Nop());
-    p.Seek(0x1019628);
-    p.WriteInst(inst::Nop());
-
-    // Remove the actual call to the drop table for AreaShellDropper
-    // we will then set the actor switch after the vanilla func runs
-    p.Seek(0x856e4);
-    p.WriteInst(inst::Nop());
+    // // stable 60fps - idk if we want this always on?
+    // // credits to HerculeHercule1 for the patch
+    // patch::CodePatcher p(0x1019608);
+    // p.WriteInst(inst::Nop());
+    // p.Seek(0x1019628);
+    // p.WriteInst(inst::Nop());
 }

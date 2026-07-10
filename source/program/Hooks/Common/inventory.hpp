@@ -120,9 +120,25 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
         uint8_t actualLevel = *Game::Data::Inventory::Level; // for dungeon items
 
         switch (ID) {
-            case 5: // Bow and Arrow_MaxUp should both give max arrows
-            case 125:
+            case 4: // Bomb
+                if ((*Game::Data::Inventory::Items)->MainItems.Bomb) {
+                    Orig(ID, 3, index); // add 3 bombs if the player already has gottem some
+                }
+                else {
+                    Orig(ID, 60, index);
+                }
+                break;
+            case 5: // Bow
+                Orig(ID, count, index);
                 Orig(60, 60, -1);
+                break;
+            case 11: // MagicPowder
+                if ((*Game::Data::Inventory::Items)->MainItems.MagicPowder) {
+                    Orig(ID, 3, index);
+                }
+                else {
+                    Orig(ID, 40, index);
+                }
                 break;
             case 44: // Compass
             case 45: // DungeonMap
@@ -145,23 +161,33 @@ HOOK_DEFINE_TRAMPOLINE(Inventory__AddItemID) {
                 EventFlags::SetFlag("BowWowEvent", true);
                 EventFlags::SetFlag("DoorOpen_Btl_MoriblinCave_2A", false);
                 EventFlags::SetFlag("DoorOpen_Btl_MoriblinCave_1A", false);
+                Orig(ID, count, index);
                 break;
             case 53: // SurfHarp - additional flags
                 EventFlags::SetFlag("GhostClear1", true);
                 EventFlags::SetFlag("Ghost2_Clear", true);
                 EventFlags::SetFlag("Ghost3_Clear", true);
                 EventFlags::SetFlag("Ghost4_Clear", true);
+                Orig(ID, count, index);
+                break;
+            case 60: // arrow
+                Orig(ID, 3, index);
                 break;
             case 123: // MagicPowder_MaxUp - give max powder if the player found the main source
+                Orig(ID, count, index);
                 if (EventFlags::CheckFlag("GetMagicPowder")) {
                     Orig(11, 40, -1);
                 }
                 break;
             case 124: // Bomb_MaxUp - give max bombs if the player found the main source
-                if (EventFlags::CheckFlag("unused0424")) {
-                    Orig(ID, count, index);
+                Orig(ID, count, index);
+                if (EventFlags::CheckFlag("BombsFoundFlag")) {
                     Orig(4, 60, -1);
                 }
+                break;
+            case 125: // Arrow_MaxUp
+                Orig(ID, count, index);
+                Orig(60, 60, -1);
                 break;
             default:
                 if (ID < 127) { // only add item if it is within the vanilla range
