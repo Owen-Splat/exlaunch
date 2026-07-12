@@ -161,4 +161,9 @@ void runCodePatches() {
     // p.WriteInst(inst::Nop());
     // p.Seek(0x1019628);
     // p.WriteInst(inst::Nop());
+
+    patch::CodePatcher p(0xff54bc);
+    p.WriteInst(inst::Nop());
+    p.Seek(0xff54c0);
+    p.WriteInst(inst::Movz(reg::W27, 1)); // force "under_water" render property to true
 }

@@ -23,7 +23,7 @@ namespace ModLoader {
         EventFlags::InstallHooks();
         // InputSystem::InstallHooks();
         Inventory::InstallHooks();
-        LevelSystem::InstallHooks();
+        // LevelSystem::InstallHooks();
         PlayReport::InstallHooks();
     }
 
