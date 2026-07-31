@@ -30,11 +30,11 @@ namespace ModLoader {
 
     void InstallRandomizerHooks() {
         // CompanionTweaks::InstallHooks(); // unfinished
-        // EnemyRandomizer::InstallHooks();
+        EnemyRandomizer::InstallHooks();
         FishingTweaks::InstallHooks();
         // MarkerTweaks::InstallHooks(); // unfinished
         SeashellRandomizer::InstallHooks();
-        // ActorReader::InstallHooks();
+        ActorReader::InstallHooks();
         EventPatcher::InstallHooks();
     }
 
