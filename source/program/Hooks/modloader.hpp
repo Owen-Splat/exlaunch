@@ -1,4 +1,5 @@
 #pragma once
+#include <Config/config.hpp>
 #include "Hooks/Common/actorswitch.hpp"
 // #include "Hooks/Common/audio.hpp"
 #include "Hooks/Common/eventflags.hpp"
@@ -32,12 +33,14 @@ namespace ModLoader {
         EXL_ASSERT(global_config.initialized);
         if (global_config.randomizer.enabled) {
             // CompanionTweaks::InstallHooks(); // unfinished
-            EnemyRandomizer::InstallHooks();
             FishingTweaks::InstallHooks();
             // MarkerTweaks::InstallHooks(); // unfinished
             SeashellRandomizer::InstallHooks();
-            ActorReader::InstallHooks();
             EventPatcher::InstallHooks();
+        }
+        if (global_config.randomizer.enemies || global_config.randomizer.enemy_sizes) {
+            EnemyRandomizer::InstallHooks();
+            ActorReader::InstallHooks();
         }
     }
 

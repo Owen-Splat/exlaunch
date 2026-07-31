@@ -156,19 +156,16 @@ uint16_t chest_ids[] = {0xc, 0x10, 0x12, 0x19, 0x1b, 0x1c, 0x1d, 0x25, 0x34, 0x3
 
 HOOK_DEFINE_INLINE(ObjTreasureBox__PopEnemy) {
     static void Callback(exl::hook::nx64::InlineCtx* ctx) {
-        EXL_ASSERT(global_config.initialized);
-        if (global_config.randomizer.enemies) {
-            ctx->W[9] = chest_ids[exl::util::GetRandomU64() % 10];
-        }
+        ctx->W[9] = chest_ids[exl::util::GetRandomU64() % 10];
     }
 };
 
 namespace EnemyRandomizer {
     void RandomizeEnemy(u64 actorDataOffset) {
-        u64* hash = reinterpret_cast<u64*>(actorDataOffset);
         u16* actorID = reinterpret_cast<u16*>(actorDataOffset + 0xc);
         std::vector<u16> vec = getValidEnemies(*actorID);
         if (vec.size() > 1) {
+            u64* hash = reinterpret_cast<u64*>(actorDataOffset);
             if (!isRequiredKill(*hash) && !canActorRandomize(*hash)) {
                 u16 new_enemy;
                 do {
@@ -195,12 +192,15 @@ namespace EnemyRandomizer {
                 scale->z = scale_factor;
                 scale = nullptr;
             }
+            hash = nullptr;
         }
-        hash = nullptr;
         actorID = nullptr;
     }
 
     void InstallHooks() {
-        ObjTreasureBox__PopEnemy::InstallAtOffset(0xca92c4);
+        EXL_ASSERT(global_config.initialized);
+        if (global_config.randomizer.enemies) {
+            ObjTreasureBox__PopEnemy::InstallAtOffset(0xca92c4);
+        }
     }
 }

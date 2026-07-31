@@ -150,13 +150,8 @@ struct PatchConfig {
     }
 
     void parseRandomizer(std::string key, std::string value) {
-        if (key == "enabled") {
-            if (value == "true") {
-                randomizer.enabled = true;
-            }
-            else {
-                return;
-            }
+        if (key == "enabled" && value == "true") {
+            randomizer.enabled = true;
         }
         else if (key == "free_book" && value == "true") {
             randomizer.free_book = true;
