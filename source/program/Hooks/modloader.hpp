@@ -9,6 +9,7 @@
 #include "Hooks/Randomizer/actorreader.hpp"
 #include "Hooks/Randomizer/companions.hpp"
 #include "Hooks/Randomizer/enemies.hpp"
+#include "Hooks/Randomizer/eventpatcher.hpp"
 #include "Hooks/Randomizer/fishing.hpp"
 #include "Hooks/Randomizer/markers.hpp"
 #include "Hooks/Randomizer/seashells.hpp"
@@ -34,6 +35,7 @@ namespace ModLoader {
         // MarkerTweaks::InstallHooks(); // unfinished
         SeashellRandomizer::InstallHooks();
         // ActorReader::InstallHooks();
+        EventPatcher::InstallHooks();
     }
 
     void InstallMods() {
