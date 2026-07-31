@@ -2,6 +2,7 @@
 #include "../lib.hpp"
 #include "Config/config.hpp"
 #include "Game/Data/inventory.hpp"
+#include "Hooks/Common/level.hpp"
 #include <string>
 #include <iterator>
 #include <vector>

@@ -1,85 +1,90 @@
-#include "lib.hpp"
-#include "nn/hid.h"
-#include "Config/config.hpp"
-#include "Hooks/Common/input.hpp"
-#include <Game/framework.hpp>
-#include <Game/Actors/player.hpp>
-#include <string>
+// SCRAPPED BECAUSE IT DOES NOT WORK ON CONSOLE
 
-// Store previous and current buttons to be able to tell when a button was just pressed rather than held
-nn::hid::NpadButtonSet prevButtons;
-nn::hid::NpadButtonSet newButtons;
 
-nn::hid::AnalogStickState mapDpadToStick() {
-    bool up = newButtons.Test((int)InputSystem::NpadButton::Up);
-    bool right = newButtons.Test((int)InputSystem::NpadButton::Right);
-    bool down = newButtons.Test((int)InputSystem::NpadButton::Down);
-    bool left = newButtons.Test((int)InputSystem::NpadButton::Left);
 
-    nn::hid::AnalogStickState modStick{};
 
-    if (up) modStick.mY = 0x7FFFFFFF;
-    if (right) modStick.mX = 0x7FFFFFFF;
-    if (down) modStick.mY = -0x7FFFFFFF;
-    if (left) modStick.mX = -0x7FFFFFFF;
+// #include "lib.hpp"
+// #include "nn/hid.h"
+// #include "Config/config.hpp"
+// #include "Hooks/Common/input.hpp"
+// #include <Game/framework.hpp>
+// #include <Game/Actors/player.hpp>
+// #include <string>
 
-    if (up && right) {
-        modStick.mX = 0x3FFFFFFF;
-        modStick.mY = 0x3FFFFFFF;
-    }
-    if (up && left) {
-        modStick.mX = -0x3FFFFFFF;
-        modStick.mY = 0x3FFFFFFF;
-    }
-    if (down && right) {
-        modStick.mX = 0x3FFFFFFF;
-        modStick.mY = -0x3FFFFFFF;
-    }
-    if (down && left) {
-        modStick.mX = -0x3FFFFFFF;
-        modStick.mY = -0x3FFFFFFF;
-    }
+// // Store previous and current buttons to be able to tell when a button was just pressed rather than held
+// nn::hid::NpadButtonSet prevButtons;
+// nn::hid::NpadButtonSet newButtons;
 
-    return modStick;
-}
+// nn::hid::AnalogStickState mapDpadToStick() {
+//     bool up = newButtons.Test((int)InputSystem::NpadButton::Up);
+//     bool right = newButtons.Test((int)InputSystem::NpadButton::Right);
+//     bool down = newButtons.Test((int)InputSystem::NpadButton::Down);
+//     bool left = newButtons.Test((int)InputSystem::NpadButton::Left);
 
-HOOK_DEFINE_TRAMPOLINE(GetNpadState__FullKeyState) {
-    static void Callback(nn::hid::NpadFullKeyState* arg1, uint port) {
-        Orig(arg1, port);
-        EXL_ASSERT(global_config.initialized);
-        if (arg1 != nullptr) {
-            InputSystem::MainLoop(*arg1);
-            if (global_config.control_scheme.movement == MovementMode::DPad) {
-                (*arg1).mAnalogStickL = mapDpadToStick();
-            }
-        }
-    }
-};
+//     nn::hid::AnalogStickState modStick{};
 
-namespace InputSystem {
-    bool IsButtonPressed(NpadButton button) {
-        return newButtons.Test((int)button);
-    }
-    bool IsButtonJustPressed(NpadButton button) {
-        return prevButtons.Test((int)button) == false && newButtons.Test((int)button) == true;
-    }
-    bool IsButtonJustReleased(NpadButton button) {
-        return prevButtons.Test((int)button) == true && newButtons.Test((int)button) == false;
-    }
+//     if (up) modStick.mY = 0x7FFFFFFF;
+//     if (right) modStick.mX = 0x7FFFFFFF;
+//     if (down) modStick.mY = -0x7FFFFFFF;
+//     if (left) modStick.mX = -0x7FFFFFFF;
 
-    void MainLoop(nn::hid::NpadFullKeyState pad) {
-        prevButtons = newButtons;
-        newButtons = pad.mButtons;
-        if (IsButtonJustPressed(NpadButton::Down)) {
-            Game::Framework* fmwk = Game::GetFramework();
-            if (fmwk != 0) {
-                // Game::Actors::Player* mPlayer = fmwk->mPlayer;
-                Logging.Log(std::to_string(fmwk->mFrameCount));
-            }
-        }
-    }
+//     if (up && right) {
+//         modStick.mX = 0x3FFFFFFF;
+//         modStick.mY = 0x3FFFFFFF;
+//     }
+//     if (up && left) {
+//         modStick.mX = -0x3FFFFFFF;
+//         modStick.mY = 0x3FFFFFFF;
+//     }
+//     if (down && right) {
+//         modStick.mX = 0x3FFFFFFF;
+//         modStick.mY = -0x3FFFFFFF;
+//     }
+//     if (down && left) {
+//         modStick.mX = -0x3FFFFFFF;
+//         modStick.mY = -0x3FFFFFFF;
+//     }
 
-    void InstallHooks() {
-        GetNpadState__FullKeyState::InstallAtOffset(0x1431a50);
-    }
-}
+//     return modStick;
+// }
+
+// HOOK_DEFINE_TRAMPOLINE(GetNpadState__FullKeyState) {
+//     static void Callback(nn::hid::NpadFullKeyState* arg1, uint port) {
+//         Orig(arg1, port);
+//         EXL_ASSERT(global_config.initialized);
+//         if (arg1 != nullptr) {
+//             InputSystem::MainLoop(*arg1);
+//             if (global_config.control_scheme.movement == MovementMode::DPad) {
+//                 (*arg1).mAnalogStickL = mapDpadToStick();
+//             }
+//         }
+//     }
+// };
+
+// namespace InputSystem {
+//     bool IsButtonPressed(NpadButton button) {
+//         return newButtons.Test((int)button);
+//     }
+//     bool IsButtonJustPressed(NpadButton button) {
+//         return prevButtons.Test((int)button) == false && newButtons.Test((int)button) == true;
+//     }
+//     bool IsButtonJustReleased(NpadButton button) {
+//         return prevButtons.Test((int)button) == true && newButtons.Test((int)button) == false;
+//     }
+
+//     void MainLoop(nn::hid::NpadFullKeyState pad) {
+//         prevButtons = newButtons;
+//         newButtons = pad.mButtons;
+//         if (IsButtonJustPressed(NpadButton::Down)) {
+//             Game::Framework* fmwk = Game::GetFramework();
+//             if (fmwk != 0) {
+//                 // Game::Actors::Player* mPlayer = fmwk->mPlayer;
+//                 Logging.Log(std::to_string(fmwk->mFrameCount));
+//             }
+//         }
+//     }
+
+//     void InstallHooks() {
+//         GetNpadState__FullKeyState::InstallAtOffset(0x1431a50);
+//     }
+// }

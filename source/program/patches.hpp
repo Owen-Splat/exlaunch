@@ -142,9 +142,7 @@ void runCodePatches() {
     if (global_config.blur_removal.enabled) {
         blurRemoval();
     }
-    if (global_config.nice_items.enabled) {
-        niceItems();
-    }
+    niceItems();
     if (global_config.damage.mode != "normal") {
         damageModifier();
     }

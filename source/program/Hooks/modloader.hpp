@@ -4,7 +4,7 @@
 #include "Hooks/Common/eventflags.hpp"
 // #include "Hooks/Common/input.hpp"
 #include "Hooks/Common/inventory.hpp"
-// #include "Hooks/Common/level.hpp"
+#include "Hooks/Common/level.hpp"
 #include "Hooks/Common/playreport.hpp"
 #include "Hooks/Randomizer/actorreader.hpp"
 // #include "Hooks/Randomizer/companions.hpp"
@@ -24,7 +24,7 @@ namespace ModLoader {
         EventFlags::InstallHooks();
         // InputSystem::InstallHooks();
         Inventory::InstallHooks();
-        // LevelSystem::InstallHooks();
+        LevelSystem::InstallHooks();
         PlayReport::InstallHooks();
     }
 
