@@ -1,21 +1,21 @@
 #pragma once
 #include "Hooks/Common/actorswitch.hpp"
-#include "Hooks/Common/audio.hpp"
+// #include "Hooks/Common/audio.hpp"
 #include "Hooks/Common/eventflags.hpp"
-#include "Hooks/Common/input.hpp"
+// #include "Hooks/Common/input.hpp"
 #include "Hooks/Common/inventory.hpp"
-#include "Hooks/Common/level.hpp"
+// #include "Hooks/Common/level.hpp"
 #include "Hooks/Common/playreport.hpp"
 #include "Hooks/Randomizer/actorreader.hpp"
-#include "Hooks/Randomizer/companions.hpp"
+// #include "Hooks/Randomizer/companions.hpp"
 #include "Hooks/Randomizer/enemies.hpp"
 #include "Hooks/Randomizer/eventpatcher.hpp"
 #include "Hooks/Randomizer/fishing.hpp"
-#include "Hooks/Randomizer/markers.hpp"
+// #include "Hooks/Randomizer/markers.hpp"
 #include "Hooks/Randomizer/seashells.hpp"
 #include "Hooks/Mods/controls.hpp"
 #include "Hooks/Mods/fixes.hpp"
-#include "Hooks/Mods/test_mods.hpp"
+// #include "Hooks/Mods/test_mods.hpp"
 
 namespace ModLoader {
     void InstallCommonHooks() {
@@ -29,18 +29,21 @@ namespace ModLoader {
     }
 
     void InstallRandomizerHooks() {
-        // CompanionTweaks::InstallHooks(); // unfinished
-        EnemyRandomizer::InstallHooks();
-        FishingTweaks::InstallHooks();
-        // MarkerTweaks::InstallHooks(); // unfinished
-        SeashellRandomizer::InstallHooks();
-        ActorReader::InstallHooks();
-        EventPatcher::InstallHooks();
+        EXL_ASSERT(global_config.initialized);
+        if (global_config.randomizer.enabled) {
+            // CompanionTweaks::InstallHooks(); // unfinished
+            EnemyRandomizer::InstallHooks();
+            FishingTweaks::InstallHooks();
+            // MarkerTweaks::InstallHooks(); // unfinished
+            SeashellRandomizer::InstallHooks();
+            ActorReader::InstallHooks();
+            EventPatcher::InstallHooks();
+        }
     }
 
     void InstallMods() {
-        // Controls::InstallHooks();
-        // GeneralFixes::InstallHooks();
+        Controls::InstallHooks();
+        GeneralFixes::InstallHooks();
         // TestMods::InstallHooks();
     }
 }

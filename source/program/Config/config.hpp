@@ -5,18 +5,6 @@
 #include <algorithm>
 #include <cctype>
 
-enum class MovementMode {
-    Standard,
-    Extra,
-    DPad
-};
-
-enum class StealingMode {
-    Standard,
-    Always,
-    Never
-};
-
 struct PatchConfig {
     bool initialized = false;
 
@@ -25,15 +13,14 @@ struct PatchConfig {
     } debug_mode;
 
     struct {
-        MovementMode movement;
-    } control_scheme;
+        bool full_direction;
+        float speed;
+    } movement;
 
     struct {
-        bool enabled;
         bool bombs;
         bool hookshot;
         bool rod;
-        bool sword;
     } nice_items;
 
     struct {
@@ -41,17 +28,13 @@ struct PatchConfig {
     } blur_removal;
 
     struct {
-        bool enabled;
-    } speed_hack;
-
-    struct {
-        bool enabled;
-    } ohko;
+        std::string mode;
+    } damage;
 
     struct {
         bool enabled;
         bool free_book;
-        StealingMode stealing;
+        std::string stealing;
         bool enemies;
         bool enemy_sizes;
     } randomizer;
@@ -104,8 +87,8 @@ struct PatchConfig {
             if (current_section == "debug_mode") {
                 parseDebugMode(key, value);
             }
-            else if (current_section == "control_scheme") {
-                parseControlScheme(key, value);
+            else if (current_section == "movement") {
+                parseMovement(key, value);
             }
             else if (current_section == "nice_items") {
                 parseNiceItems(key, value);
@@ -113,11 +96,8 @@ struct PatchConfig {
             else if (current_section == "blur_removal") {
                 parseBlurRemoval(key, value);
             }
-            else if (current_section == "speed_hack") {
-                parseSpeedHack(key, value);
-            }
-            else if (current_section == "ohko") {
-                parseOHKO(key, value);
+            else if (current_section == "damage") {
+                parseDamage(key, value);
             }
             else if (current_section == "randomizer") {
                 parseRandomizer(key, value);
@@ -133,40 +113,27 @@ struct PatchConfig {
         }
     }
 
-    void parseControlScheme(std::string key, std::string value) {
+    void parseMovement(std::string key, std::string value) {
         Logging.Log(key + " | " + value);
-        if (key == "movement") {
-            if (value == "extra") {
-                control_scheme.movement = MovementMode::Extra;
+        if (key == "full_direction") {
+            if (value == "true") {
+                movement.full_direction = true;
             }
-            else if (value == "dpad") {
-                control_scheme.movement = MovementMode::DPad;
-            }
-            else {
-                control_scheme.movement = MovementMode::Standard;
-            }
+        }
+        if (key == "speed") {
+            movement.speed = std::stof(value);
         }
     }
 
     void parseNiceItems(std::string key, std::string value) {
-        if (value == "true") {
-            nice_items.enabled = true;
-        }
-        else {
-            return;
-        }
-
-        if (key == "bombs") {
+        if (key == "bombs" && value == "true") {
             nice_items.bombs = true;
         }
-        else if (key == "hookshot") {
+        else if (key == "hookshot" && value == "true") {
             nice_items.hookshot = true;
         }
-        else if (key == "rod") {
+        else if (key == "rod" && value == "true") {
             nice_items.rod = true;
-        }
-        else if (key == "sword") {
-            nice_items.sword = true;
         }
     }
 
@@ -176,44 +143,31 @@ struct PatchConfig {
         }
     }
 
-    void parseSpeedHack(std::string key, std::string value) {
-        if (key == "enabled" && value == "true") {
-            speed_hack.enabled = true;
-        }
-    }
-
-    void parseOHKO(std::string key, std::string value) {
-        if (key == "enabled" && value == "true") {
-            ohko.enabled = true;
+    void parseDamage(std::string key, std::string value) {
+        if (key == "mode") {
+            damage.mode = value;
         }
     }
 
     void parseRandomizer(std::string key, std::string value) {
-        if (value == "true") {
-            randomizer.enabled = true;
+        if (key == "enabled") {
+            if (value == "true") {
+                randomizer.enabled = true;
+            }
+            else {
+                return;
+            }
         }
-        else {
-            return;
-        }
-
-        if (key == "free_book") {
+        else if (key == "free_book" && value == "true") {
             randomizer.free_book = true;
         }
         else if (key == "stealing") {
-            if (value == "always") {
-                randomizer.stealing = StealingMode::Always;
-            }
-            else if (value == "never") {
-                randomizer.stealing = StealingMode::Never;
-            }
-            else {
-                randomizer.stealing = StealingMode::Standard;
-            }
+            randomizer.stealing = value;
         }
-        else if (key == "enemies") {
+        else if (key == "enemies" && value == "true") {
             randomizer.enemies = true;
         }
-        else if (key == "enemy_sizes") {
+        else if (key == "enemy_sizes" && value == "true") {
             randomizer.enemy_sizes = true;
         }
     }

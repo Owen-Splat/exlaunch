@@ -33,26 +33,27 @@ void niceItems() {
         p.Seek(0xd51698);
         p.WriteInst(inst::CmpImmediate(reg::X19, 0x10));
     }
-
-    // Lv1 Sword Beams - not sure if we want to keep
-    if (global_config.nice_items.sword) {
-        p.Seek(0xde1ba8);
-        p.Write(0x3942A109); // ldrb w9, [x8, #0xa8]
-    }
 }
 
-void oneHitKO() {
+void damageModifier() {
+    int dmg = 80; // ohko
+    if (global_config.damage.mode == "none") {
+        dmg = 0;
+    }
+
     patch::CodePatcher p(0xd4c754); // normal damage
-    p.WriteInst(inst::SubImmediate(reg::W22, reg::W8, 80));
+    p.WriteInst(inst::SubImmediate(reg::W22, reg::W8, dmg));
 
     p.Seek(0xdb1f74); // fall/drown damage
-    p.WriteInst(inst::SubImmediate(reg::W8, reg::W21, 80));
+    p.WriteInst(inst::SubImmediate(reg::W8, reg::W21, dmg));
 
     p.Seek(0xd7c8c8); // trap damage
-    p.WriteInst(inst::SubImmediate(reg::W20, reg::W8, 80));
+    p.WriteInst(inst::SubImmediate(reg::W20, reg::W8, dmg));
 
     p.Seek(0xd96950); // blaino damage
-    p.WriteInst(inst::SubImmediate(reg::W8, reg::W23, 80));
+    p.WriteInst(inst::SubImmediate(reg::W8, reg::W23, dmg));
+
+    // there is also hinox throw damage, I am too lazy to find it right now
 }
 
 void randoFixes() {
@@ -128,15 +129,11 @@ void randoOptional() {
 
     // stealing
     p.Seek(0xa4a8f0);
-    switch (global_config.randomizer.stealing) {
-        case StealingMode::Always: // sword is not required to be able to steal
-            p.WriteInst(inst::Branch(0xa4a910 - 0xa4a8f0));
-            break;
-        case StealingMode::Never: // player cannot steal no matter what
-            p.WriteInst(inst::Nop());
-            break;
-        case StealingMode::Standard:
-            break;
+    if (global_config.randomizer.stealing == "always") {
+        p.WriteInst(inst::Branch(0xa4a910 - 0xa4a8f0));
+    }
+    else if (global_config.randomizer.stealing == "never") {
+        p.WriteInst(inst::Nop());
     }
 }
 
@@ -148,8 +145,8 @@ void runCodePatches() {
     if (global_config.nice_items.enabled) {
         niceItems();
     }
-    if (global_config.ohko.enabled) {
-        oneHitKO();
+    if (global_config.damage.mode != "normal") {
+        damageModifier();
     }
     if (global_config.randomizer.enabled) {
         randoFixes();

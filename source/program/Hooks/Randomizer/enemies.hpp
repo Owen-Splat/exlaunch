@@ -165,13 +165,10 @@ HOOK_DEFINE_INLINE(ObjTreasureBox__PopEnemy) {
 namespace EnemyRandomizer {
     void RandomizeEnemy(u64 actorDataOffset) {
         u64* hash = reinterpret_cast<u64*>(actorDataOffset);
-        if (!canActorRandomize(*hash)) {
-            return;
-        }
         u16* actorID = reinterpret_cast<u16*>(actorDataOffset + 0xc);
         std::vector<u16> vec = getValidEnemies(*actorID);
         if (vec.size() > 1) {
-            if (!isRequiredKill(*hash)) {
+            if (!isRequiredKill(*hash) && !canActorRandomize(*hash)) {
                 u16 new_enemy;
                 do {
                     new_enemy = vec[exl::util::GetRandomU64() % vec.size()];

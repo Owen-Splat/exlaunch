@@ -7,58 +7,33 @@
 #include <Game/Actors/player.hpp>
 #include <string>
 
-inline const float SPEED_MULTIPLIER = 1.15f;
-
 HOOK_DEFINE_INLINE(BaseWalkSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        EXL_ASSERT(global_config.initialized);
-        if (global_config.speed_hack.enabled) {
-            ctx->S[0] = 1.0f * SPEED_MULTIPLIER;
-        }
+        ctx->S[0] = 1.0f * global_config.movement.speed;
     }
 };
 
 HOOK_DEFINE_INLINE(PowerWalkSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        EXL_ASSERT(global_config.initialized);
-        if (global_config.speed_hack.enabled) {
-            ctx->S[0] = 1.15f + SPEED_MULTIPLIER;
-        }
+        ctx->S[0] = 1.15f * global_config.movement.speed;
     }
 };
 
 HOOK_DEFINE_INLINE(BaseSwimSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        EXL_ASSERT(global_config.initialized);
-        if (global_config.speed_hack.enabled) {
-            ctx->S[2] = 1.0f * SPEED_MULTIPLIER;
-        }
+        ctx->S[2] = 1.0f * global_config.movement.speed;
     }
 };
 
 HOOK_DEFINE_INLINE(PowerSwimSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        EXL_ASSERT(global_config.initialized);
-        if (global_config.speed_hack.enabled) {
-            ctx->S[2] = 1.15f * SPEED_MULTIPLIER;
-        }
-    }
-};
-
-HOOK_DEFINE_TRAMPOLINE(PlayerDamageKnockback) {
-    static void Callback(long arg1, long arg2, long arg3, uint8_t arg4, long arg5, long arg6) {
-        Orig(arg1, arg2, arg3, arg4, arg5, arg6);
-        Game::Framework* fmwk = Game::GetFramework();
-        Game::Actors::Player* mPlayer = fmwk->mPlayer;
-        Logging.Log(std::to_string(mPlayer->playerCollision->vel.x));
+        ctx->S[2] = 1.15f * global_config.movement.speed;
     }
 };
 
 // We replace the function for mapping 8 directions with our own code that maps to 360 degrees of movement
 HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
     static int Callback(double arg1, float x, float y) {
-        EXL_ASSERT(global_config.initialized);
-
         float angleRad = std::atan2f(y, x);
         int angleDeg = (int)std::floor(angleRad * 180.0 / std::numbers::pi);
 
@@ -67,32 +42,31 @@ HOOK_DEFINE_REPLACE(PlayerLink__SnapDirection) {
             angleDeg -= 360;
         }
 
-        if (global_config.control_scheme.movement == MovementMode::Standard) {
-            angleDeg = (int)std::round(angleDeg / 45.0f) * 45;
-        }
-
         return angleDeg * (int)std::round(0xffffffff / 360);
     }
 };
 
 namespace Controls {
     void InstallHooks() {
-        // // walk
-        // BaseWalkSpeedMultiplier::InstallAtOffset(0xdcdea4);
-        // PowerWalkSpeedMultiplier::InstallAtOffset(0xdcff24);
+        EXL_ASSERT(global_config.initialized);
 
-        // // shield walk
-        // BaseWalkSpeedMultiplier::InstallAtOffset(0xdb80a8);
-        // PowerWalkSpeedMultiplier::InstallAtOffset(0xdb8eac);
+        if (global_config.movement.speed != 1.0f) {
+            // walk
+            BaseWalkSpeedMultiplier::InstallAtOffset(0xdcdea4);
+            PowerWalkSpeedMultiplier::InstallAtOffset(0xdcff24);
 
-        // // swim
-        // BaseSwimSpeedMultiplier::InstallAtOffset(0xdde288);
-        // PowerSwimSpeedMultiplier::InstallAtOffset(0xddf128);
+            // shield walk
+            BaseWalkSpeedMultiplier::InstallAtOffset(0xdb80a8);
+            PowerWalkSpeedMultiplier::InstallAtOffset(0xdb8eac);
 
-        // // 360 movement
-        // PlayerLink__SnapDirection::InstallAtOffset(0xded9f0);
+            // swim
+            BaseSwimSpeedMultiplier::InstallAtOffset(0xdde288);
+            PowerSwimSpeedMultiplier::InstallAtOffset(0xddf128);
+        }
 
-        // test
-        PlayerDamageKnockback::InstallAtOffset(0xd249c0);
+        if (global_config.movement.full_direction) {
+            // 360 movement
+            PlayerLink__SnapDirection::InstallAtOffset(0xded9f0);
+        }
     }
 }

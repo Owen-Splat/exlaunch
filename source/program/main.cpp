@@ -25,7 +25,7 @@ HOOK_DEFINE_TRAMPOLINE(nnMain){
         runCodePatches();
         ModLoader::InstallCommonHooks();
         ModLoader::InstallRandomizerHooks();
-        // ModLoader::InstallMods();
+        ModLoader::InstallMods();
         Orig();
     }
 };

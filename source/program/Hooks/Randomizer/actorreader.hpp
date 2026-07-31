@@ -7,7 +7,7 @@
 HOOK_DEFINE_INLINE(InterceptActorLoad) {
     static void Callback(exl::hook::nx64::InlineCtx* ctx) {
         EXL_ASSERT(global_config.initialized);
-        if (global_config.randomizer.enemies) {
+        if (global_config.randomizer.enemies || global_config.randomizer.enemy_sizes) {
             // send the leb actor data offset to our enemy rando code
             EnemyRandomizer::RandomizeEnemy(ctx->X[26]);
         }

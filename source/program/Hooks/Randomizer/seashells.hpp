@@ -8,15 +8,6 @@ HOOK_DEFINE_INLINE(AreaShellDropper__FetchItemDrop) {
     static void Callback(exl::hook::nx64::InlineCtx* ctx) {
         long arg1 = ctx->X[19];
         ActorSwitchManager::SetSwitch(arg1 + 0x250, 0, true);
-        // int index = *(int*)(arg1 + 0x2c8);
-        // if (index == 29) {
-        //     // taltal-heights-hole (outside d4)
-        //     EventFlags::SetFlag("HeightsHoleGet", true);
-        // }
-        // else if (index == 31) {
-        //     // taltal-bomb-hole (by the bridge in the mountains)
-        //     EventFlags::SetFlag("BridgeHoleGet", true);
-        // }
     }
 };
 
