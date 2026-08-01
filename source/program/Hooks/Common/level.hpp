@@ -1,8 +1,6 @@
 #pragma once
 #include "../lib.hpp"
 #include "Config/config.hpp"
-#include "Hooks/Common/eventflags.hpp"
-#include "Game/Data/inventory.hpp"
 #include <string>
 
 inline std::string prevLevel = "";

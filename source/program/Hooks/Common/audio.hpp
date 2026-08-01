@@ -1,4 +1,5 @@
 #pragma once
+#include "../lib.hpp"
 #include <string>
 
 inline long unkPtr = 0;
