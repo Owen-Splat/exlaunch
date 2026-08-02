@@ -19,9 +19,7 @@ struct OffsetManager {
     inline uintptr_t Offset(uintptr_t addr) {
         EXL_ASSERT(initialized);
         if (is_update) {
-            // at some point, the offsets start lining up again, likely padded to the end of a page?
-            // before that though, the offset difference increases even more
-            // the end byte is a placeholder for now, set at the address of the following function of our farthest hook
+            // the offsets start lining up again at the next section (.rodata), padded to the next page
             if (addr > 0xdfaf44 && addr < 0x1434000) {
                 addr += 0xd0;
             }
