@@ -10,19 +10,19 @@
 
 HOOK_DEFINE_REPLACE(PlayReport__Add) {
     static void Callback(long arg1, long arg2) {
-        
+
     }
 };
 
 HOOK_DEFINE_REPLACE(PlayReport__Save) {
     static void Callback(long arg1) {
-        
+
     }
 };
 
 namespace PlayReport {
     void InstallHooks() {
         PlayReport__Add::InstallAtOffset(0x1432450);
-        PlayReport__Save::InstallAtOffset(0x1432460);
+        // PlayReport__Save::InstallAtOffset(0x1432460); // this crashes on updated versions???
     }
 }

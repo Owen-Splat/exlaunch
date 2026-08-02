@@ -26,7 +26,7 @@ namespace ModLoader {
         // InputSystem::InstallHooks();
         Inventory::InstallHooks();
         LevelSystem::InstallHooks();
-        PlayReport::InstallHooks();
+        // PlayReport::InstallHooks(); // crashes on updated versions???
     }
 
     void InstallRandomizerHooks() {
