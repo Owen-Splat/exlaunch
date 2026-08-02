@@ -44,8 +44,8 @@ namespace Game {
             unsigned char padding_80[0x80 - 0x44]; // 0x44 = entity flags
             RootComp* rootComp; // 0x80
             unsigned char padding_98[0x10];
-            uint64_t id; // 0x98
-            uint16_t actorIndex; // 0xa0
+            uint64_t hash; // 0x98
+            uint16_t id; // 0xa0
             unsigned char padding_260[0x260 - 0xa2];
             Coords spawnCoords; // 0x260
     };
