@@ -1,6 +1,7 @@
 #pragma once
 #include "../lib.hpp"
 #include "Config/config.hpp"
+#include "offsets.hpp"
 #include "symbols.hpp"
 #include <string>
 
@@ -55,9 +56,9 @@ namespace EventFlags {
     }
 
     void InstallHooks() {
-        EventFlags__CheckGettingFlag::InstallAtOffset(0x8d2940);
-        EventFlags__SetGettingFlag::InstallAtOffset(0x8d2a70);
-        EventFlags__CheckFlag::InstallAtOffset(0xdfa920);
-        EventFlags__SetFlag::InstallAtOffset(0xdfa7b0);
+        EventFlags__CheckGettingFlag::InstallAtOffset(offset_manager.Offset(0x8d2940));
+        EventFlags__SetGettingFlag::InstallAtOffset(offset_manager.Offset(0x8d2a70));
+        EventFlags__CheckFlag::InstallAtOffset(offset_manager.Offset(0xdfa920));
+        EventFlags__SetFlag::InstallAtOffset(offset_manager.Offset(0xdfa7b0));
     }
 }

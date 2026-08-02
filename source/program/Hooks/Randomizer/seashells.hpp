@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 #include "Hooks/Common/actorswitch.hpp"
 #include <string>
 
@@ -57,10 +58,10 @@ HOOK_DEFINE_TRAMPOLINE(ObjPot__CallDropTable) {
 
 namespace SeashellRandomizer {
     void InstallHooks() {
-        AreaShellDropper__FetchItemDrop::InstallAtOffset(0x856fc);
-        AreaShellDropper__CheckShell::InstallAtOffset(0x84a44);
-        AreaShellDropper__Delete::InstallAtOffset(0x85510);
-        ObjTree_CallDropTableOnBonk::InstallAtOffset(0xcb1f30);
-        ObjPot__CallDropTable::InstallAtOffset(0xb2ae50);
+        AreaShellDropper__FetchItemDrop::InstallAtOffset(offset_manager.Offset(0x856fc));
+        AreaShellDropper__CheckShell::InstallAtOffset(offset_manager.Offset(0x84a44));
+        AreaShellDropper__Delete::InstallAtOffset(offset_manager.Offset(0x85510));
+        ObjTree_CallDropTableOnBonk::InstallAtOffset(offset_manager.Offset(0xcb1f30));
+        ObjPot__CallDropTable::InstallAtOffset(offset_manager.Offset(0xb2ae50));
     }
 }

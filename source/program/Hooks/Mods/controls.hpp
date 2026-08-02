@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 #include <cmath>
 #include <numbers>
 #include <Config/config.hpp>
@@ -52,21 +53,21 @@ namespace Controls {
 
         if (global_config.movement.speed != 1.0f) {
             // walk
-            BaseWalkSpeedMultiplier::InstallAtOffset(0xdcdea4);
-            PowerWalkSpeedMultiplier::InstallAtOffset(0xdcff24);
+            BaseWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdcdea4));
+            PowerWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdcff24));
 
             // shield walk
-            BaseWalkSpeedMultiplier::InstallAtOffset(0xdb80a8);
-            PowerWalkSpeedMultiplier::InstallAtOffset(0xdb8eac);
+            BaseWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdb80a8));
+            PowerWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdb8eac));
 
             // swim
-            BaseSwimSpeedMultiplier::InstallAtOffset(0xdde288);
-            PowerSwimSpeedMultiplier::InstallAtOffset(0xddf128);
+            BaseSwimSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdde288));
+            PowerSwimSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xddf128));
         }
 
         if (global_config.movement.full_direction) {
             // 360 movement
-            PlayerLink__SnapDirection::InstallAtOffset(0xded9f0);
+            PlayerLink__SnapDirection::InstallAtOffset(offset_manager.Offset(0xded9f0));
         }
     }
 }

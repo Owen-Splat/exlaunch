@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 
 HOOK_DEFINE_TRAMPOLINE(SetActorSwitch) {
     static void Callback(long arg1, long arg2, long arg3) {
@@ -13,6 +14,6 @@ namespace ActorSwitchManager {
     }
 
     void InstallHooks() {
-        SetActorSwitch::InstallAtOffset(0x231b0);
+        SetActorSwitch::InstallAtOffset(offset_manager.Offset(0x231b0));
     }
 }

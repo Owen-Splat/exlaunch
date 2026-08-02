@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 #include "Config/config.hpp"
 #include <string>
 
@@ -25,6 +26,6 @@ namespace LevelSystem {
     }
 
     void InstallHooks() {
-        SetCurrentLevel::InstallAtOffset(0xdfa450);
+        SetCurrentLevel::InstallAtOffset(offset_manager.Offset(0xdfa450));
     }
 }

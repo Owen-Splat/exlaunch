@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 
 /*
     The PlayReports are disabled so that telemetry does not get sent
@@ -20,9 +21,16 @@ HOOK_DEFINE_REPLACE(PlayReport__Save) {
     }
 };
 
+HOOK_DEFINE_REPLACE(PlayReport__Add2) {
+    static void Callback(long arg1, double arg2) {
+
+    }
+};
+
 namespace PlayReport {
     void InstallHooks() {
-        PlayReport__Add::InstallAtOffset(0x1432450);
-        // PlayReport__Save::InstallAtOffset(0x1432460); // this crashes on updated versions???
+        PlayReport__Add::InstallAtOffset(offset_manager.Offset(0x1432450));
+        PlayReport__Save::InstallAtOffset(offset_manager.Offset(0x1432460));
+        PlayReport__Add2::InstallAtOffset(offset_manager.Offset(0x1432470));
     }
 }

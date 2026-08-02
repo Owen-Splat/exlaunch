@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 #include "Config/config.hpp"
 #include "Hooks/Randomizer/enemies.hpp"
 #include <string>
@@ -16,6 +17,6 @@ HOOK_DEFINE_INLINE(InterceptActorLoad) {
 
 namespace ActorReader {
     void InstallHooks() {
-        InterceptActorLoad::InstallAtOffset(0x8e177c);
+        InterceptActorLoad::InstallAtOffset(offset_manager.Offset(0x8e177c));
     }
 }

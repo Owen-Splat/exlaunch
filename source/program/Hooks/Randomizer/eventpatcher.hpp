@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 #include <string>
 
 HOOK_DEFINE_TRAMPOLINE(EventFlow__ParseInt) {
@@ -23,7 +24,7 @@ HOOK_DEFINE_REPLACE(FlowControl__CompareInt) {
 
 namespace EventPatcher {
     void InstallHooks() {
-        EventFlow__ParseInt::InstallAtOffset(0x109f790);
-        FlowControl__CompareInt::InstallAtOffset(0x804960);
+        EventFlow__ParseInt::InstallAtOffset(offset_manager.Offset(0x109f790));
+        FlowControl__CompareInt::InstallAtOffset(offset_manager.Offset(0x804960));
     }
 }

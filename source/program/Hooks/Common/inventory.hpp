@@ -1,5 +1,6 @@
 #pragma once
 #include "../lib.hpp"
+#include "offsets.hpp"
 #include "Config/config.hpp"
 #include "Hooks/Common/eventflags.hpp"
 #include "Game/Data/inventory.hpp"
@@ -217,6 +218,6 @@ namespace Inventory {
     }
 
     void InstallHooks() {
-        Inventory__AddItemID::InstallAtOffset(0x8d08e0);
+        Inventory__AddItemID::InstallAtOffset(offset_manager.Offset(0x8d08e0));
     }
 }

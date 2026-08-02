@@ -1,9 +1,36 @@
 #pragma once
+#include "lib.hpp"
+#include "symbols.hpp"
 
-#include <common.hpp>
-#include <tuple>
+struct OffsetManager {
+    bool initialized = false;
+    bool is_update = false;
 
-#include "version.hpp"
+    void SetVersion() {
+        // some function was extended so we read a null/padding byte
+        // it will be 0 for base version, and 8 for update
+        u8* version_byte = reinterpret_cast<u8*>(g_BaseAddress + 0xdfaf44);
+        if (*version_byte == 8) {
+            is_update = true;
+        }
+        initialized = true;
+    }
+
+    inline uintptr_t Offset(uintptr_t addr) {
+        EXL_ASSERT(initialized);
+        if (is_update) {
+            // at some point, the offsets start lining up again, likely padded to the end of a page?
+            // before that though, the offset difference increases even more
+            // the end byte is a placeholder for now, set at the address of the following function of our farthest hook
+            if (addr > 0xdfaf44 && addr < 0x1434000) {
+                addr += 0xd0;
+            }
+        }
+        return addr;
+    }
+};
+
+extern OffsetManager offset_manager;
 
 namespace exl::reloc {
     using VersionType = util::UserVersion;
