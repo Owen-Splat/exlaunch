@@ -13,8 +13,11 @@ struct PatchConfig {
     } debug_mode;
 
     struct {
-        bool full_direction;
-        float speed;
+        bool full_360;
+        float walk_speed = 1.0f;
+        float dash_speed = 1.0f;
+        float swim_speed = 1.0f;
+        float pop_speed = 1.15f;
     } movement;
 
     struct {
@@ -26,6 +29,10 @@ struct PatchConfig {
     struct {
         bool enabled;
     } blur_removal;
+
+    struct {
+        bool enabled;
+    } stable_fps;
 
     struct {
         std::string mode;
@@ -96,6 +103,9 @@ struct PatchConfig {
             else if (current_section == "blur_removal") {
                 parseBlurRemoval(key, value);
             }
+            else if (current_section == "stable_fps") {
+                parseStableFPS(key, value);
+            }
             else if (current_section == "damage") {
                 parseDamage(key, value);
             }
@@ -115,13 +125,20 @@ struct PatchConfig {
 
     void parseMovement(std::string key, std::string value) {
         Logging.Log(key + " | " + value);
-        if (key == "full_direction") {
-            if (value == "true") {
-                movement.full_direction = true;
-            }
+        if (key == "full_360" && value == "true") {
+            movement.full_360 = true;
         }
-        if (key == "speed") {
-            movement.speed = std::stof(value);
+        else if (key == "walk_speed") {
+            movement.walk_speed = std::stof(value);
+        }
+        else if (key == "dash_speed") {
+            movement.dash_speed = std::stof(value);
+        }
+        else if (key == "swim_speed") {
+            movement.swim_speed = std::stof(value);
+        }
+        else if (key == "pop_speed") {
+            movement.pop_speed = std::stof(value);
         }
     }
 
@@ -140,6 +157,12 @@ struct PatchConfig {
     void parseBlurRemoval(std::string key, std::string value) {
         if (key == "enabled" && value == "true") {
             blur_removal.enabled = true;
+        }
+    }
+
+    void parseStableFPS(std::string key, std::string value) {
+        if (key == "enabled" && value == "true") {
+            stable_fps.enabled = true;
         }
     }
 

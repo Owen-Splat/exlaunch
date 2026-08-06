@@ -14,6 +14,15 @@ void blurRemoval() {
     p.Write("NoTiltShift");
 }
 
+void stableFPS() {
+    // stable 60fps
+    // credits to HerculeHercule1 for the patch
+    patch::CodePatcher p(offset_manager.Offset(0x1019608));
+    p.WriteInst(inst::Nop());
+    p.Seek(offset_manager.Offset(0x1019628));
+    p.WriteInst(inst::Nop());
+}
+
 void niceItems() {
     patch::CodePatcher p(0);
 
@@ -141,6 +150,9 @@ void runCodePatches() {
     if (global_config.blur_removal.enabled) {
         blurRemoval();
     }
+    if (global_config.stable_fps.enabled) {
+        stableFPS();
+    }
     niceItems();
     if (global_config.damage.mode != "normal") {
         damageModifier();
@@ -149,10 +161,4 @@ void runCodePatches() {
         randoFixes();
         randoOptional();
     }
-    // // stable 60fps - idk if we want this always on?
-    // // credits to HerculeHercule1 for the patch
-    // patch::CodePatcher p(0x1019608);
-    // p.WriteInst(inst::Nop());
-    // p.Seek(0x1019628);
-    // p.WriteInst(inst::Nop());
 }

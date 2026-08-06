@@ -10,25 +10,37 @@
 
 HOOK_DEFINE_INLINE(BaseWalkSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        ctx->S[0] = 1.0f * global_config.movement.speed;
+        ctx->S[0] = global_config.movement.walk_speed;
     }
 };
 
 HOOK_DEFINE_INLINE(PowerWalkSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        ctx->S[0] = 1.15f * global_config.movement.speed;
+        ctx->S[0] = global_config.movement.walk_speed * global_config.movement.pop_speed;
     }
 };
 
 HOOK_DEFINE_INLINE(BaseSwimSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        ctx->S[2] = 1.0f * global_config.movement.speed;
+        ctx->S[2] = global_config.movement.swim_speed;
     }
 };
 
 HOOK_DEFINE_INLINE(PowerSwimSpeedMultiplier) {
     static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
-        ctx->S[2] = 1.15f * global_config.movement.speed;
+        ctx->S[2] = global_config.movement.swim_speed * global_config.movement.pop_speed;
+    }
+};
+
+HOOK_DEFINE_INLINE(DashSpeedNeutralMultiplier) {
+    static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
+        ctx->S[1] = 9.0f * global_config.movement.dash_speed;
+    }
+};
+
+HOOK_DEFINE_INLINE(DashSpeedHoldMultiplier) {
+    static void Callback(exl::hook::nx64::InlineFloatCtx* ctx) {
+        ctx->S[2] = 9.0f * global_config.movement.dash_speed;
     }
 };
 
@@ -51,21 +63,23 @@ namespace Controls {
     void InstallHooks() {
         EXL_ASSERT(global_config.initialized);
 
-        if (global_config.movement.speed != 1.0f) {
-            // walk
-            BaseWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdcdea4));
-            PowerWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdcff24));
+        // walk
+        BaseWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdcdea4));
+        PowerWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdcff24));
 
-            // shield walk
-            BaseWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdb80a8));
-            PowerWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdb8eac));
+        // shield walk
+        BaseWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdb80a8));
+        PowerWalkSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdb8eac));
 
-            // swim
-            BaseSwimSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdde288));
-            PowerSwimSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xddf128));
-        }
+        // swim
+        BaseSwimSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xdde288));
+        PowerSwimSpeedMultiplier::InstallAtOffset(offset_manager.Offset(0xddf128));
 
-        if (global_config.movement.full_direction) {
+        // dash
+        DashSpeedNeutralMultiplier::InstallAtOffset(offset_manager.Offset(0xda74a8));
+        DashSpeedHoldMultiplier::InstallAtOffset(offset_manager.Offset(0xda7100));
+
+        if (global_config.movement.full_360) {
             // 360 movement
             PlayerLink__SnapDirection::InstallAtOffset(offset_manager.Offset(0xded9f0));
         }
